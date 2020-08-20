@@ -10,6 +10,7 @@
     "react-checkbox-tree": "^1.6.0",
     "react-dom": "^16.13.1",
     "react-responsive-carousel": "^3.2.9",
+    "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.3",
     "semantic-ui": "^2.4.2",
     "semantic-ui-react": "^1.2.0"
@@ -33,6 +34,7 @@
       "last 1 chrome version",
       "last 1 firefox version",
       "last 1 safari version"
-    ]
+    ],
+    "homepage": "."
   }
 }

@@ -3,7 +3,7 @@ import {
   Button,
   Icon,
   Image,
-  Item,
+  Card,
   Label,
   Modal,
   Grid,
@@ -36,42 +36,31 @@ function MyCarousel(props) {
   );
 }
 
-function ItemsCollection(props) {
+function CardsCollection(props) {
   const [open, setOpen] = React.useState(false);
 
   return (
     <div>
-    
-
-      <Grid>
-        <Grid.Row>
-          <Grid.Column>1</Grid.Column>
-          <Grid.Column>2</Grid.Column>
-        </Grid.Row>
-        <Grid.Row>
-          <Grid.Column>3</Grid.Column>
-          <Grid.Column>2</Grid.Column>
-        </Grid.Row>
-      </Grid>
-
-      <Item.Group divided>
-        {props.data.map((element, i) => { 
+      <Card.Group centered>
+        {props.data.map((element, i) => {
           if (props.visibleProjects.includes(i))
-          return (
-              
-              <Item>
-                <Checkbox className='checkbox-project' onChange={() => props.onChangeProject(i)}/>
+            return (
+              <Card className="cardd">
                 <Modal
                   onClose={() => setOpen(false)}
                   onOpen={() => setOpen(true)}
                   //open={open}
                   trigger={
-                    <Item.Image
+                    <Image
                       src={
-                        element.images.map((path) =>
-                        props.img_add_prefix(path)
-                        )[0]
+                         // './img/sample.jpg'
+                         element.images.map((path) =>
+                           props.img_add_prefix(path)
+                         )[0]
                       }
+                      //size='tiny'
+
+                      //floated='right'
                       as="a"
                     />
                   }
@@ -88,29 +77,32 @@ function ItemsCollection(props) {
                     <Button onClick={() => setOpen(false)}>Закрыть</Button>
                   </Modal.Actions>
                 </Modal>
+                <Card.Content>
+                  {["a"].map(() => {
+                    return (
+                      <div>
+                        <div style= {{width: "17%", float:"left"}}>
+                          <Checkbox onChange={() => props.onChangeProject(i)} />
+                        </div>
 
-                <Item.Content>
-                  <Item.Header>{element.title}</Item.Header>
-                  {/* <Item.Meta>
-                    <span>{element.year}</span>
-                  </Item.Meta> */}
-                  <Item.Description>{element.desc2}</Item.Description>
-
-                  {/* <Item.Extra>
-                    {element.tags.map((tag) => {
-                      return <Label>{tag}</Label>;
-                    })}
-                  </Item.Extra> */}
-                </Item.Content>
-                
-              </Item>
-           
-          );
+                        <div style= {{width: "83%", float:"right"}}>
+                          <Card.Header
+                            style={{ fontSize: "13px", fontWeight: "normal" }}
+                          >
+                            {element.title}
+                          </Card.Header>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </Card.Content>
+              </Card>
+            );
         })}
-      </Item.Group>
-      
+      </Card.Group>
+      сделать, чтоыб кликать можно было не только прямо по чекбоксу
     </div>
   );
 }
 
-export default ItemsCollection;
+export default CardsCollection;

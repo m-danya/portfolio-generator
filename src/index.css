@@ -16,3 +16,8 @@ code {
 {
   padding: 50px;
 }
+
+.ui.card, .ui.cards>.card
+{
+  width: 197px !important;
+}

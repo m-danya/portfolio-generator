@@ -3,6 +3,7 @@ import Tree from "./Tree.js";
 //import Checkbox from './MyCheckbox.js'
 //import List from './List.js'
 import ItemsCollection from "./ItemsCollection.js";
+import CardsCollection from "./CardsCollection.js";
 
 import FilterMenu from "./FilterMenu.js";
 
@@ -404,8 +405,8 @@ class App extends React.Component {
             </Segment> */}
 
             <Segment>
-              <Header as="h2" content="Проекты" />
-              <ItemsCollection
+              {/* <Header as="h3" content="проекты" /> */}
+              <CardsCollection
                 data={this.state.data}
                 img_add_prefix={this.img_add_prefix}
                 onChangeProject={this.onChangeProject}
