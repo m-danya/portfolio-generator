@@ -2,7 +2,7 @@ import React from 'react';
 import Tree from './Tree.js'
 //import Checkbox from './MyCheckbox.js'
 //import List from './List.js'
-
+import ItemsCollection from './ItemsCollection.js'
 
 
 import {
@@ -28,129 +28,244 @@ const style = {
   },
 }
 
-function App() {
-  var nodes = [
-    {
-      value: "ParentOne",
-      label: "Упаковки",
-      tags: 'deleteme',
-      children: [
+class App extends React.Component {
+
+
+  constructor(props)
+  {
+    super(props);
+    this.state = {
+      tags: [
         {
-          value: "SectionOneChild",
-          label: "Соки",
-          children: [
+          value: '1',
+          label: 'Упаковка',
+          children:
+          [
             {
-              value: "SectionOneChil-of-Child-1",
-              label: "Добрый",
-              children: [
-                {
-                  value: "SectionOneChil-of-Child-1-of-Child",
-                  label: "Добрый_олмпиада",
-                  tags: ['сок', 'добрый', 'спорт'],
-                }
-              ]
+              value: '1.1',
+            label: 'Соки',
+            },
+
+            {
+              value: '1.2',
+            label: 'Минералка',
+            },
+
+            {
+              value: '1.3',
+            label: 'Крупы',
+            },
+
+            {
+              value: '1.4',
+            label: 'Дойпак',
+            },
+
+            {
+              value: '1.5',
+            label: 'Трей',
+            },
+
+            {
+              value: '1.6',
+            label: 'Пауч',
+            },
+
+
+          ],
+        },
+        {
+          value: '2',
+          label: 'Корпоративный брендинг',
+          children:
+          [
+            {
+              value: '2.1',
+            label: 'Нефть/газ',
+            },
+            
+            {
+              value: '2.2',
+            label: 'Государство',
+            },
+            
+            {
+              value: '2.3',
+            label: 'Спорт',
+            },
+            
+            {
+              value: '2.4',
+            label: 'Искусство',
+            },
+            
+          ]
+        },
+        {
+          value: '3',
+          label: 'Третья категория тегов',
+          children:
+          [
+            {
+              value: '3.1',
+            label: 'И',
             },
             {
-              value: "SectionOneChil-of-Child-2",
-              label: "SectionOneChil-of-Child-2"
-            }
-          ]
-        },
-        {
-          value: "SectionTwo",
-          label: "SectionTwo",
-          children: [
+              value: '3.2',
+            label: 'её',
+            },
             {
-              value: "SectionTwo-Child",
-              label: "SectionTwo-Child"
-            }
+              value: '3.3',
+            label: 'теги',
+            },
           ]
         }
-      ]
-    },
-    {
-      value: "ParentTwo",
-      label: "ParentTwo",
-      children: [
+      ],
+
+      data: [
         {
-          value: "ParentTwo-Child-1",
-          label: "ParentTwo-Child-1"
+          images: ['./img/sample.jpg'],
+          title: 'Сок Добрый, олимпиада',
+          desc1: 'фирменный стиль',
+          desc2: 'Описание',
+          year: 2020,
+          tags: ['сок', 'фирменный стиль', 'еда']
         },
+  
         {
-          value: "ParentTwo-Child-2",
-          label: "ParentTwo-Child-2"
-        }
-      ]
-    }
-  ];
+          images: ['./img/sp1.jpg', './img/sp2.jpg'],
+          title: 'Сок Добрый, олимпиада',
+          desc1: 'фирменный стиль',
+          desc2: 'Описание',
+          year: 2020,
+          tags: ['сок', 'фирменный стиль', 'еда', 'dsds', 'dsdsdsd sdsdsds ', 'dsdsdsd', 'dsadsda', 'fsdfsdfsd', 'fdsfsdfds']
+        },
+        
+      ],
 
-  const tags = [
-    {
-      value: '1',
-      label: 'добрый',
-    },
-    {
-      value: '2',
-      label: 'сок',
-    },
-    {
-      value: '3',
-      label: 'спорт',
-    }
-  ];
+      checkedProjects: [],
+      checkedTags: [[]],
+      expandedTags: [],
 
-  var checkedProjects = []
-  var checkedTags = []
+      }
+    
+      this.state.checkedTags =  new Array(10).fill(0).map(() => []);
 
-  var test_array = [{'1': '2'}, 2, 3, 4, 5]
+      this.handleCheckTag = this.handleCheckTag.bind(this);
 
-  var valueComparsion = nodes.map(function callback(currentValue, index, array)
-  {
-    var ans = []
-    console.log(currentValue + ': ')
-    if (currentValue['tags'])
-    {
-      const obj = [{'projectValue': 1, 'name': 2}] //{currentValue['value']: currentValue['tags']}
-      ans = ans.concat(obj)
-      console.log('ans changed: ' + ans) 
-    }
-    for (let i in currentValue)
-    {
-      console.log('... i = ' + i)
-    }
-    return 1;
-  })
+      let newExpanded = []
+      for (let a of this.state.tags)
+      {
+        //we need to expand only 1-level checkboxes 
+        newExpanded.push(a.value)
+      }
 
-  function handleCheckProjects(checked, targetNode)
-  {
-    console.log('checked ' + checked);
-  }
-  return (
-  <div>
-    <Header as='h1' content='Генератор портфолио' style={style.h1} textAlign='center' />
-
-    <Grid container columns={2} stackable>
-      <Grid.Column>
-        <Segment>
-          <Header as='h3' content='Проекты' />
-          <Tree nodes={nodes}
-                checked={checkedProjects}
-                onCheck={handleCheckProjects}/>
-        </Segment>
-      </Grid.Column>
-      <Grid.Column>
-        <Segment>
-          <Header as='h3' content='Выбрать по тегам' />
-          <Tree nodes={tags} 
-                showNodeIcon={false}
-                checked={checkedTags} />
-        </Segment>
-      </Grid.Column>
+      let newState = this.state
+      newState.expandedTags = newExpanded;
+      this.setState(newState)
       
-    </Grid>
 
-  </div>
-  );
+  }
+
+  
+  handleCheckTag(i, updatedCheckedTags, targetNode)
+  {
+    //console.log('handleCheckTag(' + newChecked + ')')
+    let newState = this.state;
+    
+    newState.checkedTags[i] = updatedCheckedTags;
+  //   let removedDoublesInState = newState.checkedTags.filter(function(value, index, arr){
+  //      return (!newChecked.includes(value))
+  //   });
+
+  //   let removeDoublesInChecked = newChecked.filter(function(value, index, arr){
+  //     return (!newState.checkedTags.includes(value))
+  //  });
+  //   newState.checkedTags = removedDoublesInState.concat(removeDoublesInChecked);
+    this.setState(newState);
+
+    
+  }
+
+  render()
+  {
+    return (
+    <div>
+      <Header as='h1' content='Генератор портфолио' style={style.h1} textAlign='center' />
+  {/* <Grid columns={2} divided>
+    <Grid.Column key={0}>
+    <Tree nodes={this.state.tags.slice(0, 1)} 
+                    showNodeIcon={false}
+                    checked={this.state.checkedTags} 
+                    handleCheckTag={this.handleCheckTag}
+                    expanded={this.state.expandedTags}
+                  />
+    </Grid.Column>
+    <Grid.Column key={1}>
+    <Tree nodes={this.state.tags.slice(1, 2)} 
+                    showNodeIcon={false}
+                    checked={this.state.checkedTags} 
+                    handleCheckTag={this.handleCheckTag}
+                    expanded={this.state.expandedTags}
+                  />
+    </Grid.Column>
+  </Grid> */}
+
+
+      <Container>
+        <Segment.Group>
+          <Segment>        
+          <Grid container columns={3} stackable>
+            <Grid.Column>
+              <Segment basic>
+                {
+                  
+                  <Tree nodes={this.state.tags.slice(0, 1)} 
+                  showNodeIcon={false}
+                  checked={this.state.checkedTags[0]} 
+                  handleCheckTag={(...other) => this.handleCheckTag(0, ...other)}
+                  expanded={this.state.expandedTags}
+                />
+                }
+              </Segment>
+            </Grid.Column>
+            <Grid.Column>
+              <Segment basic>
+              {
+                  <Tree nodes={this.state.tags.slice(1, 2)} 
+                  showNodeIcon={false}
+                  checked={this.state.checkedTags[1]} 
+                  handleCheckTag={(...other) => this.handleCheckTag(1, ...other)}
+                  expanded={this.state.expandedTags}
+                />
+                }
+              </Segment>
+            </Grid.Column>
+
+            <Grid.Column>
+              <Segment basic>
+              {
+                  <Tree nodes={this.state.tags.slice(2, 3)} 
+                  showNodeIcon={false}
+                  checked={this.state.checkedTags[2]} 
+                  handleCheckTag={(...other) => this.handleCheckTag(2, ...other)}
+                  expanded={this.state.expandedTags}
+                />
+                }
+              </Segment>
+            </Grid.Column>
+            
+          </Grid>
+          </Segment>
+          <Segment>
+            <Header as='h2' content='Проекты' />
+            <ItemsCollection data={this.state.data}/>
+          </Segment>
+        </Segment.Group>
+      </Container>
+    </div>
+    );
+  }
 }
 
 export default App;

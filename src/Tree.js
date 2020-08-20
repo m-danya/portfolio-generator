@@ -1,11 +1,14 @@
 import React from 'react';
 import CheckboxTree from 'react-checkbox-tree';
+import 'react-checkbox-tree/lib/react-checkbox-tree.css';
+import './my-style.css';
+
 
 class Tree extends React.Component
 {
     state = {
-        checked: [],
-        expanded: [],
+        //checked: [],
+        //expanded: [],
     };
 
     
@@ -14,15 +17,18 @@ class Tree extends React.Component
         return (
             <CheckboxTree
                 nodes={this.props.nodes}
-                //checked={this.state.checked}
-                expanded={this.state.expanded}
+                //already set (see below)  checked={this.state.checked}
+                //expanded={this.state.expanded}
                 //onCheck={checked => this.setState({ checked })}
                 onExpand={expanded => this.setState({ expanded })}
                 showNodeIcon={this.props.showNodeIcon}
-                expandOnClick={true}
-                onClick={() => {}}
-                onCheck={this.props.onCheck}
+                checkOnClick={true}
+                //onClick={() => {}}
+                onCheck={this.props.handleCheckTag}
                 checked={this.props.checked}
+                expanded={this.props.expanded}
+                
+                //onClick={(flag) => {this.props.handleCheckTag([flag])}}
             />
         );
     }
