@@ -1,26 +1,26 @@
 {
   "files": {
-    "main.css": "/portfolio-generator/static/css/main.f8ba7f7b.chunk.css",
-    "main.js": "/portfolio-generator/static/js/main.e94698f0.chunk.js",
-    "main.js.map": "/portfolio-generator/static/js/main.e94698f0.chunk.js.map",
+    "main.css": "/portfolio-generator/static/css/main.3e16ae50.chunk.css",
+    "main.js": "/portfolio-generator/static/js/main.8e440d3a.chunk.js",
+    "main.js.map": "/portfolio-generator/static/js/main.8e440d3a.chunk.js.map",
     "runtime-main.js": "/portfolio-generator/static/js/runtime-main.ee50ab27.js",
     "runtime-main.js.map": "/portfolio-generator/static/js/runtime-main.ee50ab27.js.map",
-    "static/css/2.9c9e3359.chunk.css": "/portfolio-generator/static/css/2.9c9e3359.chunk.css",
-    "static/js/2.606cfa63.chunk.js": "/portfolio-generator/static/js/2.606cfa63.chunk.js",
-    "static/js/2.606cfa63.chunk.js.map": "/portfolio-generator/static/js/2.606cfa63.chunk.js.map",
+    "static/css/2.b0c64c36.chunk.css": "/portfolio-generator/static/css/2.b0c64c36.chunk.css",
+    "static/js/2.f28d8159.chunk.js": "/portfolio-generator/static/js/2.f28d8159.chunk.js",
+    "static/js/2.f28d8159.chunk.js.map": "/portfolio-generator/static/js/2.f28d8159.chunk.js.map",
     "index.html": "/portfolio-generator/index.html",
-    "precache-manifest.31cc41fc883868bdbcb3562afd4c599a.js": "/portfolio-generator/precache-manifest.31cc41fc883868bdbcb3562afd4c599a.js",
+    "precache-manifest.5c8f18e814361dd7d2d09a1743a5ee12.js": "/portfolio-generator/precache-manifest.5c8f18e814361dd7d2d09a1743a5ee12.js",
     "service-worker.js": "/portfolio-generator/service-worker.js",
-    "static/css/2.9c9e3359.chunk.css.map": "/portfolio-generator/static/css/2.9c9e3359.chunk.css.map",
-    "static/css/main.f8ba7f7b.chunk.css.map": "/portfolio-generator/static/css/main.f8ba7f7b.chunk.css.map",
-    "static/js/2.606cfa63.chunk.js.LICENSE.txt": "/portfolio-generator/static/js/2.606cfa63.chunk.js.LICENSE.txt",
+    "static/css/2.b0c64c36.chunk.css.map": "/portfolio-generator/static/css/2.b0c64c36.chunk.css.map",
+    "static/css/main.3e16ae50.chunk.css.map": "/portfolio-generator/static/css/main.3e16ae50.chunk.css.map",
+    "static/js/2.f28d8159.chunk.js.LICENSE.txt": "/portfolio-generator/static/js/2.f28d8159.chunk.js.LICENSE.txt",
     "static/media/semantic.min.css": "/portfolio-generator/static/media/outline-icons.ef60a4f6.woff"
   },
   "entrypoints": [
     "static/js/runtime-main.ee50ab27.js",
-    "static/css/2.9c9e3359.chunk.css",
-    "static/js/2.606cfa63.chunk.js",
-    "static/css/main.f8ba7f7b.chunk.css",
-    "static/js/main.e94698f0.chunk.js"
+    "static/css/2.b0c64c36.chunk.css",
+    "static/js/2.f28d8159.chunk.js",
+    "static/css/main.3e16ae50.chunk.css",
+    "static/js/main.8e440d3a.chunk.js"
   ]
 }
