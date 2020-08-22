@@ -29,3 +29,5 @@ semantic/
 eskiz.jpg
 
 .vscode/
+public/Images/
+api/venv/
