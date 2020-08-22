@@ -53,10 +53,9 @@ function CardsCollection(props) {
                   trigger={
                     <Image
                       src={
-                         // './img/sample.jpg'
-                         element.images.map((path) =>
-                           props.img_add_prefix(path)
-                         )[0]
+                        element.images.map((path) =>
+                          props.img_add_prefix(path)
+                        )[0]
                       }
                       //size='tiny'
 
@@ -77,20 +76,22 @@ function CardsCollection(props) {
                     <Button onClick={() => setOpen(false)}>Закрыть</Button>
                   </Modal.Actions>
                 </Modal>
-                <Card.Content>
+                <Card.Content className="container-for-vertical">
                   {["a"].map(() => {
                     return (
                       <div>
-                        <div style= {{width: "17%", float:"left"}}>
+                         <div style={{ width: "17%", float: "left"}} className='vertical-center-checkbox'> 
                           <Checkbox onChange={() => props.onChangeProject(i)} />
                         </div>
 
-                        <div style= {{width: "83%", float:"right"}}>
+                        <div style={{ width: "83%", float: "right",  }} >
+                          <div  className='vertical-center'>
                           <Card.Header
                             style={{ fontSize: "13px", fontWeight: "normal" }}
                           >
                             {element.title}
                           </Card.Header>
+                        </div>
                         </div>
                       </div>
                     );
@@ -100,7 +101,7 @@ function CardsCollection(props) {
             );
         })}
       </Card.Group>
-      сделать, чтоыб кликать можно было не только прямо по чекбоксу
+      {/* сделать, чтоыб кликать можно было не только прямо по чекбоксу */}
     </div>
   );
 }

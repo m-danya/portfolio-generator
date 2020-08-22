@@ -21,3 +21,26 @@ code {
 {
   width: 197px !important;
 }
+
+.container-for-vertical {
+  /* height: 200px; */
+  position: relative;
+  /* border: 3px solid green; */
+}
+
+.vertical-center {
+  margin: 0;
+  /* position: absolute; */
+  
+  /* top: 58%; */
+  /* -ms-transform: translateY(-50%);
+  transform: translateY(-50%); */
+}
+
+.vertical-center-checkbox {
+  margin: 0;
+  position: absolute;
+  top: 60%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}

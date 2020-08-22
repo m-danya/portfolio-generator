@@ -23,7 +23,7 @@ import CategorySearch from "./CategorySearch.js";
 
 class FilterMenu extends React.Component {
   filterChangedName(e, value) {
-    console.log("filterchangedname: " + value.value);
+    //console.log("filterchangedname: " + value.value);
   }
 
   render() {
@@ -53,21 +53,21 @@ class FilterMenu extends React.Component {
                 filterChangedName={this.filterChangedName}
               />
               {/* <Input
-                placeholder="2001-2020"
-                //style={{width: "83%", float: "right"}}
+  placeholder="2001-2020"
+  //style={{width: "83%", float: "right"}}
 
-                //style={{ width: "30%", paddingLeft: "8px" }}
-              /> */}
+  //style={{ width: "30%", paddingLeft: "8px" }}
+/> */}
               {/* по 
-              <Input
-                style={{ width: "30%" }}
-              /> */}
+<Input
+  style={{ width: "30%" }}
+/> */}
             </Segment>
           </Grid.Column>
           <Grid.Column>
             <Segment basic>
               <Button fluid positive icon>
-                <Icon name='search' /> &nbsp; Применить фильтры
+                <Icon name="search" /> &nbsp; Применить фильтры
               </Button>
             </Segment>
           </Grid.Column>
@@ -91,7 +91,7 @@ class FilterMenu extends React.Component {
           </Grid.Column>
           <Grid.Column>
             <Segment basic>
-              <Button color='orange' fluid  icon > 
+              <Button color="orange" fluid icon>
                 Продолжить &nbsp;
                 <Icon name="right arrow" />
               </Button>
@@ -102,5 +102,6 @@ class FilterMenu extends React.Component {
     );
   }
 }
+
 
 export default FilterMenu;

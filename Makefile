@@ -1,3 +1,4 @@
 all:
-	npm run build && sed -i -e 's/\/static/static/g' ./build/index.html
-
+	npm run build && sed -i -e 's/href="\//href=\"/g' ./build/* && sed -i -e 's/src="\//src=\"/g' ./build/* && sed -i -e 's/src="\//src=\"/g' ./build/* 
+fix:
+	sed -i -e 's/href="\//href=\"/g' ./build/*.* && sed -i -e 's/src="\//src=\"/g' ./build/*.* && sed -i -e 's/src="\//src=\"/g' ./build/*.*
