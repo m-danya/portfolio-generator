@@ -17,7 +17,8 @@ class Search extends React.Component
                 search
                 selection
                 options={this.props.tags}
-                onChange={this.props.filterChangedName}
+                onChange={this.props.handleFilterNameChange}
+                value={this.props.filterChosenName}
             />
         </div>
         )

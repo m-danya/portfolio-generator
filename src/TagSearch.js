@@ -8,13 +8,15 @@ class TagSearch extends React.Component
         return (
         <div>
             <Dropdown
-                placeholder='Теги'
+                placeholder='Теги и клиенты'
                 fluid
                 multiple
                 clearable
                 search
                 selection
                 options={this.props.tags}
+                value={this.props.filterChosenTags}
+                onChange={this.props.handleFilterTagsChange}
             />
         </div>
         )

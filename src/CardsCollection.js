@@ -20,9 +20,9 @@ function MyCarousel(props) {
   return (
     <Carousel
       showArrows={true}
-      onChange={() => {}}
-      onClickItem={() => {}}
-      onClickThumb={() => {}}
+      onChange={() => { }}
+      onClickItem={() => { }}
+      onClickThumb={() => { }}
       showStatus={false}
     >
       {props.img.map((img) => {
@@ -57,9 +57,6 @@ function CardsCollection(props) {
                           props.img_add_prefix(path)
                         )[0]
                       }
-                      //size='tiny'
-
-                      //floated='right'
                       as="a"
                     />
                   }
@@ -77,25 +74,24 @@ function CardsCollection(props) {
                   </Modal.Actions>
                 </Modal>
                 <Card.Content className="container-for-vertical">
-                  {["a"].map(() => {
-                    return (
-                      <div>
-                         <div style={{ width: "17%", float: "left"}} className='vertical-center-checkbox'> 
-                          <Checkbox onChange={() => props.onChangeProject(i)} />
-                        </div>
 
-                        <div style={{ width: "83%", float: "right",  }} >
-                          <div  className='vertical-center'>
-                          <Card.Header
-                            style={{ fontSize: "13px", fontWeight: "normal" }}
-                          >
-                            {element.title}
-                          </Card.Header>
-                        </div>
-                        </div>
+                  <div>
+                    <div style={{ width: "17%", float: "left" }} className='vertical-center-checkbox'>
+                      <Checkbox onChange={() => props.onChangeProject(i)} />
+                    </div>
+
+                    <div style={{ width: "83%", float: "right", }} >
+                      <div className='vertical-center'>
+                        <Card.Header
+                          style={{ fontSize: "13px", fontWeight: "normal" }}
+                        >
+                          {element.title}
+                        </Card.Header>
                       </div>
-                    );
-                  })}
+                    </div>
+                  </div>
+
+
                 </Card.Content>
               </Card>
             );

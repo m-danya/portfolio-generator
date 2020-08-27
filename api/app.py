@@ -3,119 +3,170 @@ from openpyxl import load_workbook
 import time
 import json
 
+
+def node_string(A, five):
+    return chr(ord('A') + A) + str(five + 1)
+
+
 app = Flask(__name__)
 
+
+print('\n\n\n')
+
 path_to_xlsx = '../public/DIGITAL_PORTFOLIO.xlsx'
-path_to_images = '../public/Images/' #same thing in js, cause js and python can be deployed at different directories
+# same thing in js, cause js and python can be deployed at different directories
+path_to_images = '../public/Images/'
+
+number_column = 0     # A
+client_column = 1     # B
+paths_column = 2     # C
+category_column = 3  # D
+name_column = 4      # E
+tags_column = 5      # F
 
 
 @app.route('/api/get_data')
 def get_data():
     debug = False
-    excel_table = '../public/DIGITAL_PORTFOLIO.xlsx'
     try:
         try:
-            wb = load_workbook(excel_table, read_only=True)
+            wb = load_workbook(path_to_xlsx, read_only=True)
         except FileNotFoundError:
             raise ValueError('Excel-таблица не найдена в  ' + excel_table)
         s = wb.worksheets[0]
 
-        category_column = -1
-        paths_column = -1
-        name_column = -1
-        desc_column = -1
-        tags_column = -1
+        if (str(s[node_string(number_column, 1)].value) != 'Номер проекта'):
+            raise ValueError(
+                'Excel-таблица найдена, но содержимое ячейки ' + node_string(number_column, 1) +
+                ' не совпадает с ожидаемым форматом. В ней должен быть заголовок колонки "' +
+                'Номер проекта' +
+                '", но ячейка содержит "' + str(s[node_string(number_column, 1)].value) + '", Вероятно, что-то сместилось. Проверьте содержание таблицы. (Может, кто-то переименовал заголовок?)')
 
-        if (debug):
-            print()
-            print()
-            print()
+        if (str(s[node_string(client_column, 1)].value) != 'Клиент'):
+            raise ValueError(
+                'Excel-таблица найдена, но содержимое ячейки ' + node_string(client_column, 1) +
+                ' не совпадает с ожидаемым форматом. В ней должен быть заголовок колонки "' +
+                'Клиент' +
+                '", но ячейка содержит "' + str(s[node_string(client_column, 1)].value) + '", Вероятно, что-то сместилось. Проверьте содержание таблицы. (Может, кто-то переименовал заголовок?)')
 
-        if (s['C1'].value != 'Категория'):
-            raise ValueError('Excel-таблица найдена, но в ячейке С1 нет слова "Категория". Вероятно, что-то сместилось, проверьте содержание таблицы.')
+        if (str(s[node_string(paths_column, 1)].value) != 'Имена файлов'):
+            raise ValueError(
+                'Excel-таблица найдена, но содержимое ячейки ' + node_string(paths_column, 1) +
+                ' не совпадает с ожидаемым форматом. В ней должен быть заголовок колонки "' +
+                'Имена файлов' +
+                '", но ячейка содержит "' + str(s[node_string(paths_column, 1)].value) + '", Вероятно, что-то сместилось. Проверьте содержание таблицы. (Может, кто-то переименовал заголовок?)')
+
+        if (str(s[node_string(category_column, 1)].value) != 'Категории'):
+            raise ValueError(
+                'Excel-таблица найдена, но содержимое ячейки ' + node_string(category_column, 1) +
+                ' не совпадает с ожидаемым форматом. В ней должен быть заголовок колонки "' +
+                'Категории' +
+                '", но ячейка содержит "' + str(s[node_string(category_column, 1)].value) + '", Вероятно, что-то сместилось. Проверьте содержание таблицы. (Может, кто-то переименовал заголовок?)')
+
+        if (str(s[node_string(name_column, 1)].value) != 'Название'):
+            raise ValueError(
+                'Excel-таблица найдена, но содержимое ячейки ' + node_string(name_column, 1) +
+                ' не совпадает с ожидаемым форматом. В ней должен быть заголовок колонки "' +
+                'Название' +
+                '", но ячейка содержит "' + str(s[node_string(name_column, 1)].value) + '", Вероятно, что-то сместилось. Проверьте содержание таблицы. (Может, кто-то переименовал заголовок?)')
+
+        if (str(s[node_string(tags_column, 1)].value) != 'Теги'):
+            raise ValueError(
+                'Excel-таблица найдена, но содержимое ячейки ' + node_string(tags_column, 1) +
+                ' не совпадает с ожидаемым форматом. В ней должен быть заголовок колонки "' +
+                'Теги' +
+                '", но ячейка содержит "' + str(s[node_string(tags_column, 1)].value) + '", Вероятно, что-то сместилось. Проверьте содержание таблицы. (Может, кто-то переименовал заголовок?)')
 
         data = []
-        categories = []
-        tags = []
-        cat_tags = ['!barrier']
-        
+        all_categories = []
+        all_tags = set()
+        all_clients = set()
+
+        all_names = []
+
         ans = []
 
-        rows = list(s.rows)[1:]
+        rows = list(s.rows)[2:]
+        for row in rows:
+            if row[client_column].value and (row[client_column].value != ' ' and row[client_column].value != ''):
+                all_clients.add(row[client_column].value)
+
+        # print(all_clients)
 
         for row in rows:
-            if (row[2].value != ' '):
-                category = row[2].value
-                if debug: print('category changed to ' + category)
-                if ((len(cat_tags) == 0) or (cat_tags[0] != '!barrier')):
-                    tags.append(list(set(cat_tags)))
-                cat_tags = []
-                categories.append(category)
+            if row[paths_column].value and (row[paths_column].value != ' ' and row[paths_column].value != ''):
+                # paths set => row is valuable
+                paths = row[paths_column].value.split(', ')
+
+                categories = (row[category_column].value).split(', ')
+                for c in categories:
+                    already = False
+                    for a_c in all_categories:
+                        if a_c['name'] == c:
+                            already = True
+                            break
+                    if not already:
+                        all_categories.append({'name': c, 'tags': set()})
+
+                tags = row[tags_column].value.split(', ')
+                for t in tags:
+                    if t not in all_clients:
+                        all_tags.add(t)
+                        for c in categories:
+                            for i in range(len(all_categories)):
+                                if all_categories[i]['name'] == c:
+                                    all_categories[i]['tags'].add(t)
                 
-            if (row[1].value): 
-                
-                #если ряд - это проект (если указан путь к картинке)
-                #print('path found: ' + str(row[1].value))
-                
-                paths = (row[1].value).split(', ')
-                #print('ok')
-                #print('paths = ' + str(paths))
+                if (row[client_column].value):
+                    for c in categories:
+                        for i in range(len(all_categories)):
+                            if all_categories[i]['name'] == c:
+                                all_categories[i]['tags'].add(
+                                    row[client_column].value)
+
+                name = row[name_column].value
+                all_names.append(name)
 
                 for i in range(len(paths)):
-                   if (paths[i].find('.') == -1):
-                        #print(paths[i], end='')
-                        paths[i] += '.jpg' # trying to add .jpg to avoid missing picture
-                        #print(' => ' + str(path[i]))
-                #print('ok x2')
-                name = row[3].value
-                
-                desc = row[4].value
-
-                tags = (row[5].value).split(', ')
-
-                cat_tags += tags
+                    if (paths[i].find('.') == -1):
+                        # adding .jpg to files without extension
+                        paths[i] += '.jpg'
 
                 data.append({
                     'images': paths,
                     'title': name,
-                    'category': category,
-                    #'year': as a tag if need
-                    'tags': tags
+                    'categories': categories,
+                    'tags': tags,
+                    'number': row[number_column].value,
+                    'client': row[client_column].value,
                 })
-        #jdata = json.dumps(data)
 
-        if ((len(cat_tags) == 0) or (cat_tags[0] != '!barrier')):
-            tags.append(cat_tags)
-        
-        already = []
+        # already = []
 
-        for i in range(len(data)):
-            for j in range(i + 1, len(data)):
-                #ans_j = data[j]
-                #ans_j['cagegory'] = data[i]['category']
-                ##ans_j.data
-                if (data[i]['images'] == data[j]['images'] and (i not in already) and (j not in already)):
-                    print(str(i) + ' and ' + str(j) + ' are the same!! ')
-                    already += [i, j]
-                
-        
-        
+        # for i in range(len(data)):
+        #     for j in range(i + 1, len(data)):
+        #         if (data[i]['images'] == data[j]['images'] and (j not in already)):
+        #             print(str(i) + ' and ' + str(j) + ' are the same!! ')
+        #             already += [i, j]
+
+        for i in range(len(all_categories)):
+            all_categories[i]['tags'] = list(all_categories[i]['tags'])
+
         ans = {
             'data': data,
-            'categories': categories,
-            'tags': tags
+            'categories': all_categories,
+            'tags': list(all_tags),
+            'names': all_names,
+            'clients': list(all_clients),
         }
-
-        
-
     except ValueError as error:
         s = error.args[0]
         return {'error': s}
     except Exception as error:
         return {'error': s}
-    
+
     return ans
-    
+    #
 
 
 if __name__ == '__main__':

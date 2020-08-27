@@ -11,10 +11,12 @@ class CategorySearch extends React.Component
                 placeholder='Категория'
                 fluid
                 multiple
-                //clearable их и так можно чистить
+                clearable   
                 search
                 selection
                 options={this.props.tags}
+                value={this.props.filterChosenCategories}
+                onChange={this.props.handleFilterCategoryChange}
             />
         </div>
         )
