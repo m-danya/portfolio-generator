@@ -116,7 +116,7 @@ def get_data():
                             for i in range(len(all_categories)):
                                 if all_categories[i]['name'] == c:
                                     all_categories[i]['tags'].add(t)
-                
+
                 if (row[client_column].value):
                     for c in categories:
                         for i in range(len(all_categories)):
@@ -132,6 +132,7 @@ def get_data():
                         # adding .jpg to files without extension
                         paths[i] += '.jpg'
 
+                #    for i in range(30):
                 data.append({
                     'images': paths,
                     'title': name,

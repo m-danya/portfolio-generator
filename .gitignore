@@ -31,4 +31,6 @@ eskiz.jpg
 .vscode/
 public/Images/
 public/Previews/
+public/PreviewSmall/
+public/PreviewMedium/
 api/venv/

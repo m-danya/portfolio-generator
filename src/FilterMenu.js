@@ -28,7 +28,10 @@ class FilterMenu extends React.Component {
     super(props);
     this.state = {
       visibleTags: [],
-      
+      filterChosenName: '',
+      filterChosenCategories: [],
+      filterChosenTags: [],
+
     };
     this.handleFilterCategoryChange = this.handleFilterCategoryChange.bind(this);
     this.handleFilterTagsChange = this.handleFilterTagsChange.bind(this);
@@ -40,11 +43,14 @@ class FilterMenu extends React.Component {
 
   }
 
+  componentDidMount(props) {
+    this.recountVisibleTags();
+  }
 
   resetFilters() {
     //console.log('yay reset!')
     this.setState({
-      filterChosenName: "",
+      filterChosenName: '',
       filterChosenCategories: [],
       filterChosenTags: [],
     });
@@ -72,7 +78,9 @@ class FilterMenu extends React.Component {
       filterChosenName: value,
     });
   }
+
   recountVisibleTags() {
+    console.log('recountVisibleTags()')
     this.setState((state, props) => {
       let tags = new Set();
       let clients = new Set();
@@ -89,7 +97,9 @@ class FilterMenu extends React.Component {
         }
       if (!state.filterChosenCategories || !state.filterChosenCategories.length) {
         if (props.clients)
-          tags = props.clients.concat(state.tags);
+          tags = props.clients.concat(props.tags);
+        else
+          tags = props.tags
       }
 
       if (!tags) tags = []
@@ -99,15 +109,15 @@ class FilterMenu extends React.Component {
         visibleTags: Array.from(clients).concat((Array.from(tags))),
       }
     });
+    //console.log('recounted visible: vt = ' + this.state.visibleTags)
   }
-
 
 
   formSearchFromArray(list, type, clients) {
     if (!clients) clients = []
-    //console.log("list = " + list);
+    //console.log(`type = ${type}`);
 
-    let icon_def;
+    let icon_def = 'tag';
 
     if (type == 'categories') {
       icon_def = 'plus'
@@ -119,6 +129,7 @@ class FilterMenu extends React.Component {
 
     let ans = [];
     let i = 0;
+    //console.log(`list = ${list}`)
     if (!list || !list.length) return ans;
     for (let a of list) {
       let icon = icon_def
@@ -131,6 +142,9 @@ class FilterMenu extends React.Component {
       });
       ++i;
     }
+
+    //console.log(`${type.toUpperCase()}: formed search array: ${ans}`);
+
     return ans;
   }
 
@@ -141,7 +155,7 @@ class FilterMenu extends React.Component {
           <Grid.Column>
             <Segment basic>
               <CategorySearch
-                tags={this.formSearchFromArray(this.props.categories, 'categories')}
+                tags={this.state.filterChosenName != '' ? [] : this.formSearchFromArray(this.props.categories, 'categories')}
                 handleFilterCategoryChange={this.handleFilterCategoryChange}
                 filterChosenCategories={this.state.filterChosenCategories}
 
@@ -152,7 +166,7 @@ class FilterMenu extends React.Component {
           <Grid.Column>
             <Segment basic>
               <TagSearch
-                tags={this.formSearchFromArray(this.tags, 'tags', this.props.clients)}
+                tags={this.state.filterChosenName != '' ? [] : this.formSearchFromArray(this.state.visibleTags, 'tags', this.props.clients)}
                 handleFilterTagsChange={this.handleFilterTagsChange}
                 filterChosenTags={this.state.filterChosenTags}
 
@@ -172,7 +186,12 @@ class FilterMenu extends React.Component {
           </Grid.Column>
           <Grid.Column>
             <Segment basic>
-              <Button fluid positive icon>
+              <Button fluid positive icon 
+                   onClick={
+                  () => {this.props.recountVisibleProjects(this.state.filterChosenCategories, this.state.filterChosenTags, this.state.filterChosenName)}}//this.state.filterChosenCategories,
+                                                     //this.state.filterChosenTags,
+                                                     //this.state.filterChosenName)} 
+                >
                 <Icon name="search" /> &nbsp; Применить фильтры
               </Button>
             </Segment>
@@ -187,7 +206,7 @@ class FilterMenu extends React.Component {
           </Grid.Column>
           <Grid.Column>
             <Segment basic>
-              <Button fluid onClick={this.props.resetFilters}>Сбросить фильтры</Button>
+              <Button fluid onClick={this.resetFilters}>Сбросить фильтры</Button>
             </Segment>
           </Grid.Column>
           <Grid.Column>

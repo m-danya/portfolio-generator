@@ -17,6 +17,7 @@ class CategorySearch extends React.Component
                 options={this.props.tags}
                 value={this.props.filterChosenCategories}
                 onChange={this.props.handleFilterCategoryChange}
+                noResultsMessage={this.props.noResultsMessage}
             />
         </div>
         )

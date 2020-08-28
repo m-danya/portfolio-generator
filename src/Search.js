@@ -12,13 +12,16 @@ class Search extends React.Component
             <Dropdown
                 placeholder='По названию проекта'
                 fluid
+                lazyLoad
                 //multiple
                 clearable
                 search
+                floating
                 selection
                 options={this.props.tags}
                 onChange={this.props.handleFilterNameChange}
                 value={this.props.filterChosenName}
+                
             />
         </div>
         )

@@ -1,6 +1,5 @@
 import React from "react";
 
-import ItemsCollection from "./ItemsCollection.js";
 import CardsCollection from "./CardsCollection.js";
 import FilterMenu from "./FilterMenu.js";
 
@@ -29,19 +28,18 @@ const style = {
 };
 
 class App extends React.Component {
-  img_add_prefix(path) {
+  img_add_prefix(path, type) {
     //return "./Images/" + path;
-    return "./Previews/" + path;
+    if (type == 'preview small') return "./PreviewSmall/" + path;
+    if (type == 'preview medium') return "./PreviewMedium/" + path;
+    if (type == 'original') return "./Images/" + path;
   }
+
+  
   constructor(props) {
     super(props);
+    this.child = React.createRef();
     this.state = {
-      tags: [
-        ["1.1", "1.2"],
-        ["2.1", "2.2", "2.3", "2.4"],
-      ],
-
-      visibleTags: [],
       checkedProjects: [],
       projectNames: [],
       categories: ['1'],
@@ -50,14 +48,10 @@ class App extends React.Component {
       loading_data: true,
       error: null,
     };
-    this.resetFilters();
 
     //this.state.checkedTags = new Array(10).fill(0).map(() => []);
     this.onChangeProject = this.onChangeProject.bind(this);
-    this.handleFilterCategoryChange = this.handleFilterCategoryChange.bind(this);
-    this.handleFilterTagsChange = this.handleFilterTagsChange.bind(this);
-    this.handleFilterNameChange = this.handleFilterNameChange.bind(this);
-    this.resetFilters = this.resetFilters.bind(this);
+    this.recountVisibleProjects = this.recountVisibleProjects.bind(this);
 
   }
 
@@ -90,12 +84,15 @@ class App extends React.Component {
               tags: result.tags,
               loading_data: false,
               error: result.error,
-              visibleProjects: this.array_0_to_n((result.data || []).length),
+              visibleProjects: [],//this.array_0_to_n((result.data || []).length),
               tags: result.tags,
               clients: result.clients,
               projectNames: result.names,
             });
-            this.recountVisibleTags();
+            console.log('data got')
+            this.child.current.recountVisibleTags();
+            this.recountVisibleProjects();
+            //this.recountVisibleTags();
           }
         },
         (e) => {
@@ -109,81 +106,38 @@ class App extends React.Component {
       )
   }
 
-  resetFilters()
-  {
-    console.log('yay reset!')
-    this.setState({
-      filerChosenName: "",
-      filterChosenCategories: [],
-      filterChosenTags: [],
-    });
-    this.recountVisibleTags();
-  }
-
-  handleFilterCategoryChange(e, { name, value }) {
-    //console.log(e);
-    this.setState({
-      filterChosenCategories: value,
-    });
-    this.recountVisibleTags();
-  }
-
-  handleFilterTagsChange(e, { name, value }) {
-    //console.log(e);
-    this.setState({
-      filterChosenTags: value,
-    });
-  }
-
-  handleFilterNameChange(e, { name, value }) {
-    //console.log(e);
-    this.setState({
-      filterChosenName: value,
-    });
-  }
-  recountVisibleTags() {
-    this.setState((state, props) => {
-      let tags = new Set();
-      let clients = new Set();
-      if (state.categories)
-        for (let c of state.categories) {
-          if (state.filterChosenCategories && state.filterChosenCategories.includes(c.name)) {
-            for (let t of c.tags) {
-              if (state.clients.includes(t))
-                clients.add(t);
-              else tags.add(t);
-              
-            } 
-          }
-        }
-      if (!state.filterChosenCategories || !state.filterChosenCategories.length) {
-        if (state.clients)
-         tags = state.clients.concat(state.tags);
+  recountVisibleProjects(filterChosenCategories, filterChosenTags, filterChosenName) { // применить фильтры
+    //console.log('recountVisibleProjects')
+    let ans = []
+    if (this.state.data) for (let p of this.state.data)
+    {
+      if (filterChosenName)
+      {
+        if (p.title == filterChosenName) 
+          ans.push(p.number - 1); // ЕСЛИ 1 проект в таблице - 0 в массиве!
       }
+      else if (filterChosenCategories && filterChosenCategories.length )
+      {
 
-      if (!tags) tags = []
-      if (!clients) clients = []
-
-      return {
-        visibleTags:  Array.from(clients).concat((Array.from(tags))),
       }
-    });
-  }
-
-  recountVisibleProjects() {
-    //TODO!
-
+      else{
+        ans.push(p.number - 1)
+      }
+    }
+    this.setState({
+      visibleProjects: ans,
+    })
   }
 
   onChangeProject(i) {
     //console.log("project changed! " + i);
   }
 
-  array_0_to_n(n) {
-    let ans = []
-    for (let i = 0; i < n; ++i) ans.push(i);
-    return ans;
-  }
+  // array_0_to_n(n) {
+  //   let ans = []
+  //   for (let i = 0; i < n; ++i) ans.push(i);
+  //   return ans;
+  // }
 
 
 
@@ -202,17 +156,14 @@ class App extends React.Component {
       <Container>
         <Segment.Group >
           <FilterMenu
+            recountVisibleProjects={this.recountVisibleProjects}
             projectNames={this.state.projectNames}
             categories={!this.state.categories || this.state.categories.map(c => { return (c.name) })}
+            categories_with_tags={!this.state.categories || this.state.categories}
             clients={this.state.clients}
-            tags={this.state.visibleTags}
-            filerChosenName={this.state.filerChosenName}
-            filterChosenCategories={this.state.filterChosenCategories}
-            filterChosenTags={this.state.filterChosenTags}
-            handleFilterCategoryChange={this.handleFilterCategoryChange}
-            handleFilterNameChange={this.handleFilterNameChange}
-            handleFilterTagsChange={this.handleFilterTagsChange}
-            resetFilters={this.resetFilters}
+            tags={this.state.tags}
+            ref={this.child}
+            //recountVisibleProjects={this.recountVisibleProjects}
           />
 
           <Segment>
@@ -227,7 +178,7 @@ class App extends React.Component {
 
 
             {this.state.error &&
-              < div style={{ height: "350px" }}>
+              <div style={{ height: "350px" }}>
                 <Dimmer active>
                   <Header as='h2' icon inverted>Ошибка при загрузке данных из Excel-таблицы</Header>
                   <Segment inverted color='red'>  {this.state.error.toString()} </Segment>
@@ -240,18 +191,11 @@ class App extends React.Component {
 
             {!this.state.error && !this.state.loading_data &&
 
-              <CardsCollection data={
-                this.state.data
-              }
-                img_add_prefix={
-                  this.img_add_prefix
-                }
-                onChangeProject={
-                  this.onChangeProject
-                }
-                visibleProjects={
-                  this.state.visibleProjects
-                }
+              <CardsCollection
+                data={this.state.data}
+                img_add_prefix={this.img_add_prefix}
+                onChangeProject={this.onChangeProject}
+                visibleProjects={this.state.visibleProjects}
               />
             }
 

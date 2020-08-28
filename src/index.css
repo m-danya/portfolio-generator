@@ -44,3 +44,7 @@ code {
   -ms-transform: translateY(-50%);
   transform: translateY(-50%);
 }
+
+.textAlignCenter {
+  text-align: center;
+}
