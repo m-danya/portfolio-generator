@@ -206,7 +206,10 @@ class FilterMenu extends React.Component {
           </Grid.Column>
           <Grid.Column>
             <Segment basic>
-              <Button fluid onClick={this.resetFilters}>Сбросить фильтры</Button>
+              <Button fluid onClick={() => {this.resetFilters(); 
+                //this.props.recountVisibleProjects(this.state.filterChosenCategories, this.state.filterChosenTags, this.state.filterChosenName);
+                //console.log('resettttttttttttttt')
+                }}>Сбросить фильтры</Button>
             </Segment>
           </Grid.Column>
           <Grid.Column>

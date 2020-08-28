@@ -35,7 +35,7 @@ class App extends React.Component {
     if (type == 'original') return "./Images/" + path;
   }
 
-  
+
   constructor(props) {
     super(props);
     this.child = React.createRef();
@@ -109,21 +109,49 @@ class App extends React.Component {
   recountVisibleProjects(filterChosenCategories, filterChosenTags, filterChosenName) { // применить фильтры
     //console.log('recountVisibleProjects')
     let ans = []
-    if (this.state.data) for (let p of this.state.data)
-    {
-      if (filterChosenName)
-      {
-        if (p.title == filterChosenName) 
-          ans.push(p.number - 1); // ЕСЛИ 1 проект в таблице - 0 в массиве!
+    if (this.state.data)
+      for (let p of this.state.data) {
+        if (filterChosenName) {
+          if (p.title == filterChosenName)
+            ans.push(p.number); // универсально, все ок
+        }
+        else if (filterChosenCategories && filterChosenCategories.length) {
+          //если выбрана хоть одна
+          let add = false;
+          if (p.categories && p.categories.length)
+            for (let c of p.categories) {
+              if (add) break;
+              if (filterChosenCategories.includes(c)) {
+                // по категории подходит, но что по тегам
+                if (!filterChosenTags || !filterChosenTags.length) {
+                  add = true;
+                  break;
+                }
+                if (p.tags && p.tags.length)
+                  for (let t of p.tags) {
+                    if (filterChosenTags.includes(t)) {
+                      add = true;
+                      break;
+                    }
+                  }
+              }
+            }
+          if (add) ans.push(p.number); //универсально, все ок
+        }
+        else if (filterChosenTags && filterChosenTags.length) {
+          //если заданы только теги
+          if (p.tags && p.tags.length)
+            for (let t of p.tags) {
+              if (filterChosenTags.includes(t)) {
+                ans.push(p.number);
+                break;
+              }
+            }
+        }
+        else {
+          ans.push(p.number)
+        }
       }
-      else if (filterChosenCategories && filterChosenCategories.length )
-      {
-
-      }
-      else{
-        ans.push(p.number - 1)
-      }
-    }
     this.setState({
       visibleProjects: ans,
     })
@@ -163,7 +191,7 @@ class App extends React.Component {
             clients={this.state.clients}
             tags={this.state.tags}
             ref={this.child}
-            //recountVisibleProjects={this.recountVisibleProjects}
+          //recountVisibleProjects={this.recountVisibleProjects}
           />
 
           <Segment>

@@ -76,7 +76,7 @@ function CardsCollection(props) {
     <div>
       <Card.Group centered>
         {props.data.map((element, i) => {
-          if (props.visibleProjects.includes(i))
+          if (props.visibleProjects.includes(element.number))
             return (
 
               <Card className="cardd">
