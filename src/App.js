@@ -2,7 +2,7 @@ import React from "react";
 
 import CardsCollection from "./CardsCollection.js";
 import FilterMenu from "./FilterMenu.js";
-import MyList from './MyList'
+import Page2 from './Page2'
 import {
   Button,
   Container,
@@ -282,10 +282,16 @@ class App extends React.Component {
                 fluid
                 icon
                 onClick={() => { this.setPage('main') }}>
-                Назад &nbsp;
-                <Icon name="left arrow" />
+                <Icon name="left arrow" />&nbsp;Назад
+
               </Button>
-              <MyList />
+
+              <Page2
+                data={this.state.data}
+                chosenProjects={this.state.chosenProjects} 
+                img_add_prefix={this.img_add_prefix}
+              />
+
             </Segment.Group>
           </Container>
 

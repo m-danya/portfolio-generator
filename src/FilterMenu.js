@@ -19,7 +19,6 @@ import {
   Checkbox,
 } from "semantic-ui-react";
 import CategorySearch from "./CategorySearch.js";
-import { cleanup } from "@testing-library/react";
 
 class FilterMenu extends React.Component {
 
@@ -148,7 +147,7 @@ class FilterMenu extends React.Component {
       icon_def = 'plus'
     }
     else if (type == 'names') {
-      icon_def = 'file'
+      icon_def = null //file
     }
 
 
@@ -242,7 +241,9 @@ class FilterMenu extends React.Component {
           </Grid.Column>
           <Grid.Column>
             <Segment basic className='verticalAlign' style={{ textAlign: 'center', }}>
-
+            <div style={{fontWeight: 'bold', fontSize: '16px',}}>
+              {`Проектов выбрано: ${this.props.numberOfChosenProjects}`}
+            </div>
             </Segment>
           </Grid.Column>
           <Grid.Column>
@@ -258,9 +259,7 @@ class FilterMenu extends React.Component {
 
             {/* <Button fluid>Добавить в портфолио</Button> */}
             {/* <Button fluid> */}
-            <div style={{ paddingTop: '10px', }}>
-              {`Проектов выбрано: ${this.props.numberOfChosenProjects}`}
-            </div>
+           
             {/* </Button> */}
             </Segment>
           </Grid.Column>

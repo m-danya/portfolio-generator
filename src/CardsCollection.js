@@ -10,12 +10,8 @@ import {
   Checkbox,
   Segment,
 } from "semantic-ui-react";
-import { waitForElementToBeRemoved } from "@testing-library/react";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
-import { LazyLoadImage } from 'react-lazy-load-image-component';
-import 'react-lazy-load-image-component/src/effects/blur.css';
-import LazyImage from './LazyImage'
-import LazyCard from './LazyCard'
+
 
 const paragraph = <Image src="/images/wireframe/short-paragraph.png" />;
 
@@ -24,11 +20,7 @@ var Carousel = require("react-responsive-carousel").Carousel;
 
 
 class MyCarousel extends React.Component {
-  //function next() {
-  //   this.setState((state) => ({
-  //     currentSlide: state.currentSlide + 1,
-  //   }));
-  // }
+
   constructor(props) {
     super(props);
     this.state = {
