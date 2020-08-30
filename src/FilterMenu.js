@@ -37,6 +37,7 @@ class FilterMenu extends React.Component {
     this.handleFilterTagsChange = this.handleFilterTagsChange.bind(this);
     this.handleFilterNameChange = this.handleFilterNameChange.bind(this);
     this.resetFilters = this.resetFilters.bind(this);
+    this.checkAll = this.checkAll.bind(this);
 
     this.resetFilters();
 
@@ -53,8 +54,23 @@ class FilterMenu extends React.Component {
       filterChosenName: '',
       filterChosenCategories: [],
       filterChosenTags: [],
-    });
-    this.recountVisibleTags();
+    }, () => {
+      this.recountVisibleTags();
+      this.props.recountVisibleProjects(this.state.filterChosenCategories, this.state.filterChosenTags, this.state.filterChosenName);
+    }
+    ); //callback
+  }
+
+  checkAll() {
+    //visibleProjects = [1, 3, 7] -> selectAll([1, 7])
+
+    if (this.props.numberOfVisibleProjects == this.props.numberOfChosenProjects) {
+      this.props.selectAll('deselect all')
+    }
+    else {
+      this.props.selectAll('select all')
+
+    }
   }
 
   handleFilterCategoryChange(e, { name, value }) {
@@ -84,7 +100,7 @@ class FilterMenu extends React.Component {
     this.setState((state, props) => {
       let tags = new Set();
       let clients = new Set();
-      if (props.categories_with_tags)
+      if (props.categories_with_tags && props.categories_with_tags.length)
         for (let c of props.categories_with_tags) {
           if (state.filterChosenCategories && state.filterChosenCategories.includes(c.name)) {
             for (let t of c.tags) {
@@ -186,12 +202,12 @@ class FilterMenu extends React.Component {
           </Grid.Column>
           <Grid.Column>
             <Segment basic>
-              <Button fluid positive icon 
-                   onClick={
-                  () => {this.props.recountVisibleProjects(this.state.filterChosenCategories, this.state.filterChosenTags, this.state.filterChosenName)}}//this.state.filterChosenCategories,
-                                                     //this.state.filterChosenTags,
-                                                     //this.state.filterChosenName)} 
-                >
+              <Button fluid positive icon
+                onClick={
+                  () => { this.props.recountVisibleProjects(this.state.filterChosenCategories, this.state.filterChosenTags, this.state.filterChosenName) }}//this.state.filterChosenCategories,
+              //this.state.filterChosenTags,
+              //this.state.filterChosenName)} 
+              >
                 <Icon name="search" /> &nbsp; Применить фильтры
               </Button>
             </Segment>
@@ -201,28 +217,38 @@ class FilterMenu extends React.Component {
         <Grid container columns={4} stackable style={{ marginTop: "-40px" }}>
           <Grid.Column>
             <Segment basic>
-              <Button fluid>Выбрать всё</Button>
+              <Button
+                fluid
+                onClick={this.checkAll}
+              >Выбрать всё</Button>
             </Segment>
           </Grid.Column>
           <Grid.Column>
             <Segment basic>
-              <Button fluid onClick={() => {this.resetFilters(); 
-                //this.props.recountVisibleProjects(this.state.filterChosenCategories, this.state.filterChosenTags, this.state.filterChosenName);
+              <Button fluid onClick={() => {
+                this.resetFilters();
                 //console.log('resettttttttttttttt')
-                }}>Сбросить фильтры</Button>
+              }}>Сбросить фильтры</Button>
             </Segment>
           </Grid.Column>
           <Grid.Column>
-            <Segment basic>
-              <Button fluid>Добавить в портфолио</Button>
+            <Segment basic className='verticalAlign' style={{ textAlign: 'center', }}>
+
             </Segment>
           </Grid.Column>
           <Grid.Column>
-            <Segment basic>
+            <Segment basic className='verticalAlign' style={{ textAlign: 'center', }} >
               <Button color="orange" fluid icon>
                 Продолжить &nbsp;
                 <Icon name="right arrow" />
               </Button>
+
+              {/* <Button fluid>Добавить в портфолио</Button> */}
+              {/* <Button fluid> */}
+              <div style={{ paddingTop: '10px', }}>
+                {`Проектов выбрано: ${this.props.numberOfChosenProjects}`}
+              </div>
+              {/* </Button> */}
             </Segment>
           </Grid.Column>
         </Grid>

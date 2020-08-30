@@ -37,10 +37,9 @@ class MyCarousel extends React.Component {
     this.next = this.next.bind(this);
   }
 
-
   next() {
     this.setState((state) => ({
-      currentSlide: state.currentSlide + 1,
+      currentSlide: (state.currentSlide + 1) % this.props.img.length,
     }));
   }
 
@@ -52,6 +51,7 @@ class MyCarousel extends React.Component {
         onClickItem={this.next}
         onClickThumb={() => { }}
         showStatus={false}
+        infiniteLoop
         //width='80%'
         //centerMode
         selectedItem={this.state.currentSlide}
@@ -101,18 +101,18 @@ function CardsCollection(props) {
                 >
                   <Modal.Header>{element.title}</Modal.Header>
                   <Modal.Content>
-                        <Label icon='barcode' style={{ margin: '6px', }} content={`Номер проекта: ${element.number}`} />
-                        <Label icon='building' style={{ margin: '6px', }} content={
-                          element.client ? element.client : 'Клиент не задан'} />
-                        {element.tags.map(e => {
-                          return (
-                            <Label icon='tag' style={{ margin: '6px', }} content={e} />
+                    <Label icon='barcode' style={{ margin: '6px', }} content={`Номер проекта: ${element.number}`} />
+                    <Label icon='building' style={{ margin: '6px', }} content={
+                      element.client ? element.client : 'Клиент не задан'} />
+                    {element.tags.map(e => {
+                      return (
+                        <Label icon='tag' style={{ margin: '6px', }} content={e} />
 
-                          );
-                        })}
+                      );
+                    })}
 
                   </Modal.Content>
-                  
+
                   <Modal.Content image >
                     <MyCarousel
 
@@ -131,7 +131,8 @@ function CardsCollection(props) {
 
                   <div>
                     <div style={{ width: "17%", float: "left" }} className='vertical-center-checkbox'>
-                      <Checkbox onChange={() => props.onChangeProject(i)} />
+                      <Checkbox onChange={() => props.onChangeProject(element.number)}
+                        checked={props.chosenProjects[element.number]} />
                     </div>
 
                     <div style={{ width: "83%", float: "right", }} >

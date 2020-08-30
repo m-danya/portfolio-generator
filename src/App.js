@@ -40,18 +40,18 @@ class App extends React.Component {
     super(props);
     this.child = React.createRef();
     this.state = {
-      checkedProjects: [],
+      chosenProjects: [],
       projectNames: [],
-      categories: ['1'],
+      categories: [],
       visibleProjects: [],
-
+      numberOfChosenProjects: 0,
       loading_data: true,
       error: null,
     };
 
-    //this.state.checkedTags = new Array(10).fill(0).map(() => []);
     this.onChangeProject = this.onChangeProject.bind(this);
     this.recountVisibleProjects = this.recountVisibleProjects.bind(this);
+    this.selectAll = this.selectAll.bind(this);
 
   }
 
@@ -107,7 +107,7 @@ class App extends React.Component {
   }
 
   recountVisibleProjects(filterChosenCategories, filterChosenTags, filterChosenName) { // применить фильтры
-    //console.log('recountVisibleProjects')
+    //console.log(`recountVisibleProjects(${filterChosenCategories}, ${filterChosenTags}, ${filterChosenName})`)
     let ans = []
     if (this.state.data)
       for (let p of this.state.data) {
@@ -152,14 +152,46 @@ class App extends React.Component {
           ans.push(p.number)
         }
       }
+    //console.log(`after recalculating ans = ${ans}`)
     this.setState({
       visibleProjects: ans,
     })
   }
 
-  onChangeProject(i) {
-    //console.log("project changed! " + i);
+  onChangeProject(number) {
+    //console.log("project changed! " + number);
+    this.setState((state, props) => {
+      let plus_minus = 0;
+      let NewChosenProjects = state.chosenProjects.slice(); //IMMUTABLE
+      NewChosenProjects[number] = !state.chosenProjects[number]
+      if (NewChosenProjects[number]) ++plus_minus;
+      else --plus_minus;
+      return {
+        chosenProjects: NewChosenProjects,
+        numberOfChosenProjects: state.numberOfChosenProjects + plus_minus,
+      };
+    }
+    );
   }
+
+  selectAll(type) {
+    console.log('type = ' + type)
+    this.setState((state, props) => {
+      let ans = []
+      for (let t of state.visibleProjects)
+      {
+        ans[t] = true
+      }
+      console.log('ans = ')
+      console.log(ans)
+      return ({
+        chosenProjects: type == 'select all' ? ans : [],
+        numberOfChosenProjects: type == 'select all' ? state.visibleProjects.length : 0,
+      })
+    });
+  }
+
+
 
   // array_0_to_n(n) {
   //   let ans = []
@@ -191,6 +223,11 @@ class App extends React.Component {
             clients={this.state.clients}
             tags={this.state.tags}
             ref={this.child}
+            numberOfChosenProjects={this.state.numberOfChosenProjects}
+            chosenProjects={this.state.chosenProjects}
+            visibleProjects={this.state.visibleProjects}
+            selectAll={this.selectAll}
+            numberOfVisibleProjects={this.state.visibleProjects ? this.state.visibleProjects.length : 0}
           //recountVisibleProjects={this.recountVisibleProjects}
           />
 
@@ -224,6 +261,7 @@ class App extends React.Component {
                 img_add_prefix={this.img_add_prefix}
                 onChangeProject={this.onChangeProject}
                 visibleProjects={this.state.visibleProjects}
+                chosenProjects={this.state.chosenProjects}
               />
             }
 
