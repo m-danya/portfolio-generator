@@ -1,7 +1,6 @@
 import React from "react";
 import Search from "./Search.js";
 import TagSearch from "./TagSearch.js";
-
 import {
   Button,
   Container,
@@ -63,8 +62,18 @@ class FilterMenu extends React.Component {
 
   checkAll() {
     //visibleProjects = [1, 3, 7] -> selectAll([1, 7])
+    if (!this.props.visibleProjects || !this.props.visibleProjects.length) return;
 
-    if (this.props.numberOfVisibleProjects == this.props.numberOfChosenProjects) {
+    let checked_visible = 0;
+
+    for (let p of this.props.visibleProjects)
+    {
+      if (this.props.chosenProjects[p]) ++checked_visible;
+    }
+    
+    console.log('checked visible = ' + checked_visible)
+
+    if (this.props.numberOfVisibleProjects == checked_visible) {
       this.props.selectAll('deselect all')
     }
     else {
@@ -238,21 +247,25 @@ class FilterMenu extends React.Component {
           </Grid.Column>
           <Grid.Column>
             <Segment basic className='verticalAlign' style={{ textAlign: 'center', }} >
-              <Button color="orange" fluid icon>
+              <Button
+                color="orange"
+                fluid
+                icon
+                onClick={() => {this.props.setPage('move')}}> 
                 Продолжить &nbsp;
                 <Icon name="right arrow" />
               </Button>
 
-              {/* <Button fluid>Добавить в портфолио</Button> */}
-              {/* <Button fluid> */}
-              <div style={{ paddingTop: '10px', }}>
-                {`Проектов выбрано: ${this.props.numberOfChosenProjects}`}
-              </div>
-              {/* </Button> */}
+            {/* <Button fluid>Добавить в портфолио</Button> */}
+            {/* <Button fluid> */}
+            <div style={{ paddingTop: '10px', }}>
+              {`Проектов выбрано: ${this.props.numberOfChosenProjects}`}
+            </div>
+            {/* </Button> */}
             </Segment>
           </Grid.Column>
         </Grid>
-      </Segment>
+      </Segment >
     );
   }
 }

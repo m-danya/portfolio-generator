@@ -2,7 +2,7 @@ import React from "react";
 
 import CardsCollection from "./CardsCollection.js";
 import FilterMenu from "./FilterMenu.js";
-
+import MyList from './MyList'
 import {
   Button,
   Container,
@@ -40,6 +40,7 @@ class App extends React.Component {
     super(props);
     this.child = React.createRef();
     this.state = {
+      page: 'main',
       chosenProjects: [],
       projectNames: [],
       categories: [],
@@ -52,6 +53,7 @@ class App extends React.Component {
     this.onChangeProject = this.onChangeProject.bind(this);
     this.recountVisibleProjects = this.recountVisibleProjects.bind(this);
     this.selectAll = this.selectAll.bind(this);
+    this.setPage = this.setPage.bind(this);
 
   }
 
@@ -177,30 +179,30 @@ class App extends React.Component {
   selectAll(type) {
     console.log('type = ' + type)
     this.setState((state, props) => {
-      let ans = []
-      for (let t of state.visibleProjects)
-      {
-        ans[t] = true
+      let ans1 = state.chosenProjects.slice();
+      let ans2 = state.chosenProjects.slice();
+
+      let count_plus = 0
+      let count_minus = 0
+
+      for (let t of state.visibleProjects) {
+        if (!ans1[t]) ++count_plus;
+        ans1[t] = true;
+        if (ans2[t]) ++count_minus;
+        ans2[t] = false;
       }
-      console.log('ans = ')
-      console.log(ans)
       return ({
-        chosenProjects: type == 'select all' ? ans : [],
-        numberOfChosenProjects: type == 'select all' ? state.visibleProjects.length : 0,
+        chosenProjects: type == 'select all' ? ans1 : ans2,
+        numberOfChosenProjects: type == 'select all' ? state.numberOfChosenProjects + count_plus : state.numberOfChosenProjects - count_minus,
       })
     });
   }
 
-
-
-  // array_0_to_n(n) {
-  //   let ans = []
-  //   for (let i = 0; i < n; ++i) ans.push(i);
-  //   return ans;
-  // }
-
-
-
+  setPage(s) {
+    this.setState({
+      page: s
+    });
+  }
 
   render() {
     return (<div>
@@ -212,62 +214,83 @@ class App extends React.Component {
         }
         textAlign="center" />
 
+      {this.state.page == 'main' &&
+        <Container>
+          <Segment.Group >
+            <FilterMenu
+              recountVisibleProjects={this.recountVisibleProjects}
+              projectNames={this.state.projectNames}
+              categories={!this.state.categories || this.state.categories.map(c => { return (c.name) })}
+              categories_with_tags={!this.state.categories || this.state.categories}
+              clients={this.state.clients}
+              tags={this.state.tags}
+              ref={this.child}
+              numberOfChosenProjects={this.state.numberOfChosenProjects}
+              chosenProjects={this.state.chosenProjects}
+              visibleProjects={this.state.visibleProjects}
+              selectAll={this.selectAll}
+              numberOfVisibleProjects={this.state.visibleProjects ? this.state.visibleProjects.length : 0}
+              setPage={this.setPage}
+            //recountVisibleProjects={this.recountVisibleProjects}
+            />
 
-      <Container>
-        <Segment.Group >
-          <FilterMenu
-            recountVisibleProjects={this.recountVisibleProjects}
-            projectNames={this.state.projectNames}
-            categories={!this.state.categories || this.state.categories.map(c => { return (c.name) })}
-            categories_with_tags={!this.state.categories || this.state.categories}
-            clients={this.state.clients}
-            tags={this.state.tags}
-            ref={this.child}
-            numberOfChosenProjects={this.state.numberOfChosenProjects}
-            chosenProjects={this.state.chosenProjects}
-            visibleProjects={this.state.visibleProjects}
-            selectAll={this.selectAll}
-            numberOfVisibleProjects={this.state.visibleProjects ? this.state.visibleProjects.length : 0}
-          //recountVisibleProjects={this.recountVisibleProjects}
-          />
+            <Segment>
+              {this.state.loading_data &&
 
-          <Segment>
-            {this.state.loading_data &&
-
-              <div style={{ height: "350px" }}>
-                <Dimmer active>
-                  <Loader indeterminate> Подгружаем файлы из Excel-таблицы</Loader>
-                </Dimmer>
-              </div>
-            }
+                <div style={{ height: "350px" }}>
+                  <Dimmer active>
+                    <Loader indeterminate> Подгружаем файлы из Excel-таблицы</Loader>
+                  </Dimmer>
+                </div>
+              }
 
 
-            {this.state.error &&
-              <div style={{ height: "350px" }}>
-                <Dimmer active>
-                  <Header as='h2' icon inverted>Ошибка при загрузке данных из Excel-таблицы</Header>
-                  <Segment inverted color='red'>  {this.state.error.toString()} </Segment>
+              {this.state.error &&
+                <div style={{ height: "350px" }}>
+                  <Dimmer active>
+                    <Header as='h2' icon inverted>Ошибка при загрузке данных из Excel-таблицы</Header>
+                    <Segment inverted color='red'>  {this.state.error.toString()} </Segment>
 
-                  <Segment color='' inverted>{'Полученные данные: ' + this.state.data}</Segment>
+                    <Segment color='' inverted>{'Полученные данные: ' + this.state.data}</Segment>
 
-                </Dimmer>
-              </div>
-            }
+                  </Dimmer>
+                </div>
+              }
 
-            {!this.state.error && !this.state.loading_data &&
+              {!this.state.error && !this.state.loading_data &&
 
-              <CardsCollection
-                data={this.state.data}
-                img_add_prefix={this.img_add_prefix}
-                onChangeProject={this.onChangeProject}
-                visibleProjects={this.state.visibleProjects}
-                chosenProjects={this.state.chosenProjects}
-              />
-            }
+                <CardsCollection
+                  data={this.state.data}
+                  img_add_prefix={this.img_add_prefix}
+                  onChangeProject={this.onChangeProject}
+                  visibleProjects={this.state.visibleProjects}
+                  chosenProjects={this.state.chosenProjects}
+                />
+              }
 
-          </Segment>
-        </Segment.Group>
-      </Container>
+            </Segment>
+          </Segment.Group>
+        </Container>
+      }
+      {this.state.page == 'move' &&
+        <div>
+
+          <Container>
+            <Segment.Group >
+              <Button
+                color="orange"
+                fluid
+                icon
+                onClick={() => { this.setPage('main') }}>
+                Назад &nbsp;
+                <Icon name="left arrow" />
+              </Button>
+              <MyList />
+            </Segment.Group>
+          </Container>
+
+        </div>
+      }
     </div >
     );
   }
