@@ -215,7 +215,7 @@ class App extends React.Component {
         textAlign="center" />
 
       {this.state.page == 'main' &&
-        <Container>
+        <Container className='containerFullWitdh'>
           <Segment.Group >
             <FilterMenu
               recountVisibleProjects={this.recountVisibleProjects}
@@ -246,7 +246,7 @@ class App extends React.Component {
 
 
               {this.state.error &&
-                <div style={{ height: "350px" }}>
+                <div style={{ height: "350px", width: "100%",}}>
                   <Dimmer active>
                     <Header as='h2' icon inverted>Ошибка при загрузке данных из Excel-таблицы</Header>
                     <Segment inverted color='red'>  {this.state.error.toString()} </Segment>
@@ -275,23 +275,18 @@ class App extends React.Component {
       {this.state.page == 'move' &&
         <div>
 
-          <Container>
+          <Container className='containerFullWitdh'>
             <Segment.Group >
-              <Button
-                color="orange"
-                fluid
-                icon
-                onClick={() => { this.setPage('main') }}>
-                <Icon name="left arrow" />&nbsp;Назад
 
-              </Button>
-
-              <Page2
-                data={this.state.data}
-                chosenProjects={this.state.chosenProjects} 
-                img_add_prefix={this.img_add_prefix}
-              />
-
+              <Segment>
+                
+                <Page2
+                  data={this.state.data}
+                  chosenProjects={this.state.chosenProjects}
+                  img_add_prefix={this.img_add_prefix}
+                  setPage={this.setPage}
+                />
+              </Segment>
             </Segment.Group>
           </Container>
 

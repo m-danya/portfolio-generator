@@ -1,5 +1,9 @@
 import {
-    Card
+    Card,
+    Dimmer,
+    Loader,
+    Button,
+    Icon,
 }
     from 'semantic-ui-react'
 
@@ -11,11 +15,13 @@ class Page2 extends Component {
 
     constructor(props) {
         super(props);
-
+        this.state = {
+            loading: true,
+        };
     }
 
     componentDidMount() {
-        //console.log('didmount! ' + this.props.data.length + ', wow!')
+        console.log('didmount! ' + this.props.data.length + ', wow!')
         let projects = []
         if (this.props.data && this.props.data.length)
             for (let p of this.props.data) {
@@ -25,15 +31,38 @@ class Page2 extends Component {
             }
         this.setState({
             projects: projects,
+            loading: false,
         })
     }
 
     render() {
         return (
             <div>
-                <DndList
-                    img_add_prefix={this.props.img_add_prefix}
-                />
+                {this.state.loading &&
+
+                    <div style={{ height: "500px" }}>
+                        <Dimmer active>
+                            <Loader indeterminate> Обрабатываем данные...</Loader>
+                        </Dimmer>
+
+                    </div>
+                }
+                {!this.state.loading &&
+                    <div>
+                        <Button
+                            color="orange"
+                            fluid
+                            icon
+                            onClick={() => { this.props.setPage('main') }}>
+                            <Icon name="left arrow" />&nbsp;Назад
+                        </Button>
+
+                        <DndList
+                            img_add_prefix={this.props.img_add_prefix}
+                            items={this.state.projects}
+                        />
+                    </div>
+                }
             </div>
         );
     }

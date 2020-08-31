@@ -18,7 +18,7 @@ code {
 
 .ui.card,
 .ui.cards > .card {
-  width: 197px !important;
+  width: 150px !important;
 }
 
 .container-for-vertical {
@@ -39,9 +39,10 @@ code {
 .vertical-center-checkbox {
   margin: 0;
   position: absolute;
-  top: 60%;
-  -ms-transform: translateY(-50%);
-  transform: translateY(-50%);
+  
+  top: calc(50% - 7px) ;
+  /* -ms-transform: translateY(-50%); */
+  /* transform: translateY(-50%); */
 }
 
 .textAlignCenter {
@@ -56,6 +57,18 @@ code {
   transform: translateY(-50%);
 }
 
+.checkboxGoDown {
+  /* position: absolute; */
+  top: 85%;
+  /* -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%); */
+}
+
+
+.containerFullWitdh{
+  width: 100% !important;
+}
 /* .buttonDelete > div> ul> li >button {
   background-color: #b32626;
   border: none;

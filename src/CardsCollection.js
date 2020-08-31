@@ -119,16 +119,13 @@ function CardsCollection(props) {
                     <Button onClick={() => setOpen(false)}>Закрыть</Button>
                   </Modal.Actions>
                 </Modal>
-                <Card.Content className="container-for-vertical">
+                <Card.Content className="">
 
                   <div>
-                    <div style={{ width: "17%", float: "left" }} className='vertical-center-checkbox'>
-                      <Checkbox onChange={() => props.onChangeProject(element.number)}
-                        checked={props.chosenProjects[element.number]} />
-                    </div>
+                    
 
-                    <div style={{ width: "83%", float: "right", }} >
-                      <div className='vertical-center'>
+                    <div style={{ width: "100%", float: "center", }} className='' >
+                      <div className=''>
                         <Card.Header
                           style={{ fontSize: "13px", fontWeight: "normal" }}
                         >
@@ -136,10 +133,15 @@ function CardsCollection(props) {
                         </Card.Header>
                       </div>
                     </div>
+                    
                   </div>
 
 
                 </Card.Content>
+                <div style={{ width: "100%", textAlign: 'center', paddingBottom: '10px'}} className='checkboxGoDown' >
+                      <Checkbox onChange={() => props.onChangeProject(element.number)}
+                        checked={props.chosenProjects[element.number]} />
+                    </div>
               </Card>
             );
         })}
