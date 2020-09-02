@@ -175,8 +175,11 @@ class DndList extends Component {
 
                         </Card.Content>
                         <div style={{ width: "100%", textAlign: 'center', paddingBottom: '10px' }} className='checkboxGoDown' >
-                            <Icon name='move' /> &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
-                            <Icon name='remove' onClick={() => this.handleRemoveItem(value.number)} />
+                            <Icon name='move'  style={{ 'cursor': 'pointer' }} /> &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+                            <Icon name='remove' style={{ 'cursor': 'pointer' }} onClick={() => {
+                                console.log('add ARE YOU SURE prompt')
+                                if (window.confirm('Удалить проект из списка?', 'Внимание'))
+                                this.handleRemoveItem(value.number)}} />
                         </div>
                     </Card>
                 
