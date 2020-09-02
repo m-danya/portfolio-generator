@@ -70,7 +70,7 @@ class FilterMenu extends React.Component {
       if (this.props.chosenProjects[p]) ++checked_visible;
     }
     
-    console.log('checked visible = ' + checked_visible)
+    //console.log('checked visible = ' + checked_visible)
 
     if (this.props.numberOfVisibleProjects == checked_visible) {
       this.props.selectAll('deselect all')
@@ -104,7 +104,7 @@ class FilterMenu extends React.Component {
   }
 
   recountVisibleTags() {
-    console.log('recountVisibleTags()')
+    //console.log('recountVisibleTags()')
     this.setState((state, props) => {
       let tags = new Set();
       let clients = new Set();

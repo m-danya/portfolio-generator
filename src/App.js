@@ -273,24 +273,17 @@ class App extends React.Component {
         </Container>
       }
       {this.state.page == 'move' &&
-        <div>
 
           <Container className='containerFullWitdh'>
-            <Segment.Group >
-
-              <Segment>
-                
+                          
                 <Page2
                   data={this.state.data}
                   chosenProjects={this.state.chosenProjects}
                   img_add_prefix={this.img_add_prefix}
                   setPage={this.setPage}
                 />
-              </Segment>
-            </Segment.Group>
+            
           </Container>
-
-        </div>
       }
     </div >
     );
