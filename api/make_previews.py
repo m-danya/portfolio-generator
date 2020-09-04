@@ -11,4 +11,5 @@ for image in files:
     im = Image.open('%s%s' % (path1, image))
     im.thumbnail((256, 144)) # 16:9, #(1000, 563)
     im.save('%s%s' % (path2, image))
+    break
 

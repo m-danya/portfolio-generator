@@ -14,9 +14,10 @@ import {
     Segment,
 } from "semantic-ui-react";
 
+import { confirmAlert } from 'react-confirm-alert'; // Import
+import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+
 var Carousel = require("react-responsive-carousel").Carousel;
-
-
 
 class MyCarousel extends React.Component {
 
@@ -36,25 +37,26 @@ class MyCarousel extends React.Component {
 
     render() {
         return (
-            <div style={{ width: '70%', margin: 'auto' }}><Carousel
-                //showArrows={true}
-                onChange={() => { }}
-                onClickItem={this.next}
-                onClickThumb={() => { }}
-                showStatus={false}
-                infiniteLoop
-                //width='80%'
-                //centerMode
-                selectedItem={this.state.currentSlide}
-            >
-                {this.props.img.map((img) => {
-                    return (
-                        <div style={{ 'cursor': 'pointer' }} >
-                            <img src={img} />
-                        </div>
-                    );
-                })}
-            </Carousel>
+            <div style={{ width: '70%', margin: 'auto' }}>
+                <Carousel
+                    //showArrows={true}
+                    onChange={() => { }}
+                    onClickItem={this.next}
+                    onClickThumb={() => { }}
+                    showStatus={false}
+                    infiniteLoop
+                    //width='80%'
+                    //centerMode
+                    selectedItem={this.state.currentSlide}
+                >
+                    {this.props.img.map((img) => {
+                        return (
+                            <div style={{ 'cursor': 'pointer' }} >
+                                <img src={img} />
+                            </div>
+                        );
+                    })}
+                </Carousel>
             </div>
         );
     }
@@ -67,7 +69,7 @@ const SortableList = SortableContainer(
         return (
             <Card.Group centered>
                 {items.map((value, index) => (
-                    <SortableItem key={`item-${value}`} index={index} value={value} cards={cards} />
+                    <SortableItem key={`item-${value.number}`} index={index} value={value} cards={cards} />
                 ))}
             </Card.Group>
         );
@@ -86,6 +88,7 @@ class DndList extends Component {
         this.setState(({ items }) => ({
             items: arrayMove(items, oldIndex, newIndex),
         }));
+        this.props.handleOrderChange(oldIndex, newIndex)
 
     };
 
@@ -175,21 +178,31 @@ class DndList extends Component {
 
                         </Card.Content>
                         <div style={{ width: "100%", textAlign: 'center', paddingBottom: '10px' }} className='checkboxGoDown' >
-                            <Icon name='move'  style={{ 'cursor': 'pointer' }} /> &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+                            <Icon name='move' style={{ 'cursor': 'pointer' }} /> &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
                             <Icon name='remove' style={{ 'cursor': 'pointer' }} onClick={() => {
-                                console.log('add ARE YOU SURE prompt')
-                                if (window.confirm('Удалить проект из списка?', 'Внимание'))
-                                this.handleRemoveItem(value.number)}} />
+
+                                confirmAlert({
+                                    title: 'Внимание',
+                                    message: 'Удалить проект из выбранных?',
+                                    buttons: [
+                                        {
+                                            label: 'Да',
+                                            onClick: () => this.handleRemoveItem(value.number)
+                                        },
+                                        {
+                                            label: 'Нет',
+                                            //onClick: () => alert('Click No')
+                                        }
+                                    ]
+                                });
+                                // if (window.confirm('Удалить проект из списка?', 'Внимание'))
+                                //     this.handleRemoveItem(value.number)
+                            }} />
                         </div>
                     </Card>
-                
             }
         }
-
     }
-
-
-
 
     render() {
         return <SortableList

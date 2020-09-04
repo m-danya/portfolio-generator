@@ -1,7 +1,9 @@
-from flask import Flask
+from flask import Flask, make_response
 from openpyxl import load_workbook
 import time
 import json
+import img2pdf
+from flask import request
 
 
 def node_string(A, five):
@@ -10,12 +12,13 @@ def node_string(A, five):
 
 app = Flask(__name__)
 
-
 print('\n\n\n')
 
 path_to_xlsx = '../public/DIGITAL_PORTFOLIO.xlsx'
 # same thing in js, cause js and python can be deployed at different directories
 path_to_images = '../public/Images/'
+#path_to_images = '../public/PreviewSmall/'
+path_to_pdfs = '../public/Pdfs/'
 
 number_column = 0     # A
 client_column = 1     # B
@@ -168,6 +171,37 @@ def get_data():
 
     return ans
     #
+
+
+@app.route('/api/generate_pdf', methods=['GET', 'POST'])
+def generate_pdf():
+
+    projects_data = json.loads(request.data)['data']
+    # print(projects_data[0]['images'])
+    if (len(projects_data) < 1):
+        return {'error': 'Вы не выбрали ни одного проекта!'}
+    print()
+    print()
+    #print([i['images'] for i in projects_data])
+
+    pr = [project for project in [i['images'] for i in projects_data]]
+    #pr = [p for p in [j for j in pr]]
+    #flat_list = [item for sublist in l for item in sublist]
+    pr = [item for sublist in pr for item in sublist]
+
+    img_list = [path_to_images + image for image in pr]
+
+    path_to_pdf = path_to_pdfs + \
+        time.strftime('Portfolio_%d-%m-%Y_%H-%M-%S.pdf')
+
+    with open(path_to_pdf, "wb") as f:
+        f.write(img2pdf.convert([i for i in img_list]))
+
+    response = {
+        'link': path_to_pdf,
+    }
+
+    return response
 
 
 if __name__ == '__main__':
