@@ -13,6 +13,9 @@ import DndList from './DndList'
 import arrayMove from 'array-move';
 import React, { Component } from 'react';
 
+const axios = require('axios').default;
+
+
 class Page2 extends Component {
 
     constructor(props) {
@@ -47,67 +50,36 @@ class Page2 extends Component {
         })
     }
 
-    async postData(url = '', data = {}) {
-        // Default options are marked with *
-        const response = await fetch(url, {
-            method: 'POST', // *GET, POST, PUT, DELETE, etc.
-            mode: 'cors', // no-cors, *cors, same-origin
-            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-            credentials: 'same-origin', // include, *same-origin, omit
-            headers: {
-                'Content-Type': 'application/json'
-                // 'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            redirect: 'follow', // manual, *follow, error
-            referrerPolicy: 'no-referrer', // no-referrer, *client
-            body: JSON.stringify(data) // body data type must match "Content-Type" header
-        });
-        return await response.json(); // parses JSON response into native JavaScript objects
-    }
+    // async postData(url = '', data = {}) {
+    //     // Default options are marked with *
+    //     const response = await fetch(url, {
+    //         method: 'POST', // *GET, POST, PUT, DELETE, etc.
+    //         mode: 'cors', // no-cors, *cors, same-origin
+    //         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+    //         credentials: 'same-origin', // include, *same-origin, omit
+    //         headers: {
+    //             'Content-Type': 'application/json'
+    //             // 'Content-Type': 'application/x-www-form-urlencoded',
+    //         },
+    //         redirect: 'follow', // manual, *follow, error
+    //         referrerPolicy: 'no-referrer', // no-referrer, *client
+    //         body: JSON.stringify(data) // body data type must match "Content-Type" header
+    //     });
+    //     return await response.json(); // parses JSON response into native JavaScript objects
+    // }
 
-    handleRenderClick(event) {
+    handleRenderClick() {
         console.log('gandelds')
-        if (event) event.preventDefault();
+
         this.setState({
             loadingRender: true,
         })
-        const requestOptions = {
-            method: 'GET',
-            redirect: 'manual',
-            //redirect: 'follow', // manual, *follow, error
-            //headers: { 'Content-Type': 'application/json' },
-            //body: JSON.stringify({ data: this.state.projects })
-        };
 
-        let getDevices = async () => {
-            const settings = {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ data: this.state.projects })
-            };
-            try {
-                const fetchResponse = await fetch(`api/generate_pdf`, settings);
-                const data = await fetchResponse.json();
-                return data;
-            } catch (e) {
-                return e;
-            }    
-        
-        }
+        axios.post('api/generate_pdf', { data: this.state.projects })
+            //.then(data => { this.setState({ link: data.link }) })
+            //.then(() => { this.setState({ loadingRender: false }); alert('ok'); });
+        //  
 
-        
-
-        console.log(getDevices())
-        //this.postData('api/generate_pdf', { data: this.state.projects })
-        //     getDevices.then(data => this.setState({ link: data.link }))
-        //     .then(() => this.setState({ loadingRender: false }));
-        // // alert('ok')
-        this.setState({
-            loadingRender: false,
-        })
     }
 
     render() {

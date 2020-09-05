@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "array-move": "^3.0.1",
+    "axios": "^0.20.0",
     "react": "^16.13.1",
     "react-checkbox-tree": "^1.6.0",
     "react-confirm-alert": "^2.6.2",
