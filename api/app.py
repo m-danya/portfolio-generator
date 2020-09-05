@@ -1,24 +1,25 @@
-from flask import Flask, make_response
+from flask import Flask, make_response, current_app, send_from_directory
 from openpyxl import load_workbook
 import time
 import json
 import img2pdf
 from flask import request
-
+from flask_cors import CORS
+import os
 
 def node_string(A, five):
     return chr(ord('A') + A) + str(five + 1)
 
-
 app = Flask(__name__)
+CORS(app)
 
 print('\n\n\n')
 
 path_to_xlsx = '../public/DIGITAL_PORTFOLIO.xlsx'
-# same thing in js, cause js and python can be deployed at different directories
 path_to_images = '../public/Images/'
-#path_to_images = '../public/PreviewSmall/'
-path_to_pdfs = '../public/Pdfs/'
+path_to_folder_pdfs = '/home/greedisgood/github/js/ddvb/api/Pdfs'
+path_to_pdfs = 'Pdfs/'
+host = 'http://localhost:5000/'
 
 number_column = 0     # A
 client_column = 1     # B
@@ -26,6 +27,12 @@ paths_column = 2     # C
 category_column = 3  # D
 name_column = 4      # E
 tags_column = 5      # F
+
+def convert_bytes(num):
+    for x in ['bytes', 'KB', 'MB', 'GB', 'TB']:
+        if num < 1024.0:
+            return "%3.1f %s" % (num, x)
+        num /= 1024.0
 
 
 @app.route('/api/get_data')
@@ -173,21 +180,25 @@ def get_data():
     #
 
 
-@app.route('/api/generate_pdf', methods=['GET', 'POST'])
+@app.route('/api/generate_pdf', methods=['POST'])
 def generate_pdf():
 
+    print('got data!')
+    #print(json.loads(json.loads(request.data)['data']))
+    print('###')
     projects_data = json.loads(request.data)['data']
     # print(projects_data[0]['images'])
     if (len(projects_data) < 1):
-        return {'error': 'Вы не выбрали ни одного проекта!'}
+        return {'link': "../public/Pdfs/Portfolio_05-09-2020_20-18-52.pdf"}
+        #return {'error': 'Вы не выбрали ни одного проекта!'}
     print()
     print()
     #print([i['images'] for i in projects_data])
 
-    pr = [project for project in [i['images'] for i in projects_data]]
-    #pr = [p for p in [j for j in pr]]
-    #flat_list = [item for sublist in l for item in sublist]
-    pr = [item for sublist in pr for item in sublist]
+    #pr = [project for project in [i['images'] for i in projects_data]]
+    #pr = [item for sublist in pr for item in sublist]
+
+    pr = projects_data
 
     img_list = [path_to_images + image for image in pr]
 
@@ -198,10 +209,24 @@ def generate_pdf():
         f.write(img2pdf.convert([i for i in img_list]))
 
     response = {
-        'link': path_to_pdf,
+        'link': host + path_to_pdf,
     }
 
+    #return {'error': 'Вы не выбрали ни одного проекта!'}
     return response
+
+
+@app.route('/Pdfs/<path:filename>', methods=['GET', 'POST'])
+def download(filename):
+    return send_from_directory(directory=path_to_folder_pdfs, filename=filename)
+
+@app.route('/info')
+def info():
+    return {
+        'warningFolderName': path_to_folder_pdfs,
+        'warningCount': len([name for name in os.listdir(path_to_folder_pdfs)]),
+        'warningSize': convert_bytes(sum([os.stat(path_to_folder_pdfs + '/' + i).st_size for i in os.listdir(path_to_folder_pdfs)]))
+    }
 
 
 if __name__ == '__main__':

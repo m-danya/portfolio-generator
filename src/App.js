@@ -20,12 +20,16 @@ import {
   Table,
 } from "semantic-ui-react";
 
+const axios = require('axios').default;
+
 const style = {
   h1: {
     paddingTop: "1em",
     paddingBottom: "0.5em",
   },
 };
+
+const BACKEND_ADDRESS = 'http://127.0.0.1:5000'
 
 class App extends React.Component {
   img_add_prefix(path, type) {
@@ -59,11 +63,16 @@ class App extends React.Component {
 
   componentDidMount() //after mount
   {
-    fetch("api/get_data")
+    // fetch(`${backend_address}/api/get_data`, {
+    //   method: 'GET',
+    //   mode: 'no-cors',
+    // })
+    axios.get(`${BACKEND_ADDRESS}/api/get_data`)
       .then(res => {
-        //console.log(res);
-        if (res.status == 200)
-          return res.json()
+        // console.log("response!!!!!!!!!!!")
+        // console.log(res);
+        // //if (res.status == 200)
+        //return res.json()
         //if it's internal error
         let error_text = null;
         if (res.status == 500)
@@ -74,29 +83,28 @@ class App extends React.Component {
           error: error_text,
           loading_data: false,
         });
-        return null;
-      })
-      .then(
-        (result) => {
-          if (result) {
-            //console.log('data: ' + JSON.stringify(result))
-            this.setState({
-              data: result.data,
-              categories: result.categories,
-              tags: result.tags,
-              loading_data: false,
-              error: result.error,
-              visibleProjects: [],//this.array_0_to_n((result.data || []).length),
-              tags: result.tags,
-              clients: result.clients,
-              projectNames: result.names,
-            });
-            console.log('data got')
-            this.child.current.recountVisibleTags();
-            this.recountVisibleProjects();
-            //this.recountVisibleTags();
-          }
-        },
+        //return null;
+        let result = res.data;
+
+        if (result) {
+          //console.log('data: ' + JSON.stringify(result))
+          this.setState({
+            data: result.data,
+            categories: result.categories,
+            tags: result.tags,
+            loading_data: false,
+            error: result.error,
+            visibleProjects: [],//this.array_0_to_n((result.data || []).length),
+            tags: result.tags,
+            clients: result.clients,
+            projectNames: result.names,
+          });
+          console.log('data got')
+          this.child.current.recountVisibleTags();
+          this.recountVisibleProjects();
+          //this.recountVisibleTags();
+        }
+      },
         (e) => {
           this.setState({
             data: [],
@@ -204,6 +212,12 @@ class App extends React.Component {
     });
   }
 
+  handleRenderClick() {
+    let oneDimensionProjects = ['01_DDVB_portfolio_CORP-BRANDING-all-26.jpg',
+      '01_DDVB_portfolio_CORP-BRANDING-all-27.jpg']
+    axios.post(`${BACKEND_ADDRESS}/api/generate_pdf`, { data: oneDimensionProjects }) //
+    alert('done')
+  }
   render() {
     return (<div>
       <Header
@@ -246,7 +260,7 @@ class App extends React.Component {
 
 
               {this.state.error &&
-                <div style={{ height: "350px", width: "100%",}}>
+                <div style={{ height: "350px", width: "100%", }}>
                   <Dimmer active>
                     <Header as='h2' icon inverted>Ошибка при загрузке данных из Excel-таблицы</Header>
                     <Segment inverted color='red'>  {this.state.error.toString()} </Segment>
@@ -274,16 +288,17 @@ class App extends React.Component {
       }
       {this.state.page == 'move' &&
 
-          <Container className='containerFullWitdh'>
-                          
-                <Page2
-                  data={this.state.data}
-                  chosenProjects={this.state.chosenProjects}
-                  img_add_prefix={this.img_add_prefix}
-                  setPage={this.setPage}
-                />
-            
-          </Container>
+        <Container className='containerFullWitdh'>
+
+          <Page2
+            data={this.state.data}
+            chosenProjects={this.state.chosenProjects}
+            img_add_prefix={this.img_add_prefix}
+            setPage={this.setPage}
+            BACKEND_ADDRESS={BACKEND_ADDRESS}
+          />
+
+        </Container>
       }
     </div >
     );

@@ -96,6 +96,7 @@ class DndList extends Component {
         this.setState(({ items }) => ({
             items: items.filter((e) => { return e.number != numba }),//arrayRemove(items, oldIndex, newIndex),
         }));
+        this.props.handleRemoveProject(numba)
     }
 
     constructor(props) {

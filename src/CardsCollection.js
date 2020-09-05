@@ -67,7 +67,7 @@ function CardsCollection(props) {
   return (
     <div>
       <Card.Group centered>
-        {props.data.map((element, i) => {
+        {props.data && props.data.map((element, i) => {
           if (props.visibleProjects.includes(element.number))
             return (
 

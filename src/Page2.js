@@ -4,6 +4,8 @@ import {
     Loader,
     Button,
     Grid,
+    Header,
+    Container,
     Segment,
     Icon,
 }
@@ -12,6 +14,9 @@ import {
 import DndList from './DndList'
 import arrayMove from 'array-move';
 import React, { Component } from 'react';
+import ModalSuccess from './ModalSuccess'
+import { confetti } from 'dom-confetti';
+
 
 const axios = require('axios').default;
 
@@ -23,9 +28,11 @@ class Page2 extends Component {
         this.state = {
             loading: true,
             loadingRender: false,
-            order: []
+            order: [],
+            showModal: false,
         };
         this.handleOrderChange = this.handleOrderChange.bind(this);
+        this.handleRemoveProject = this.handleRemoveProject.bind(this);
         this.handleRenderClick = this.handleRenderClick.bind(this);
     }
 
@@ -34,6 +41,13 @@ class Page2 extends Component {
             projects: arrayMove(projects, oldIndex, newIndex),
         }));
     }
+
+    handleRemoveProject(index) {
+        this.setState(({ projects }) => ({
+            projects: projects.filter((e) => { return e.number != index }),
+        }));
+    }
+
 
     componentDidMount() {
         //console.log('didmount! ' + this.props.data.length + ', wow!')
@@ -50,37 +64,68 @@ class Page2 extends Component {
         })
     }
 
-    // async postData(url = '', data = {}) {
-    //     // Default options are marked with *
-    //     const response = await fetch(url, {
-    //         method: 'POST', // *GET, POST, PUT, DELETE, etc.
-    //         mode: 'cors', // no-cors, *cors, same-origin
-    //         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-    //         credentials: 'same-origin', // include, *same-origin, omit
-    //         headers: {
-    //             'Content-Type': 'application/json'
-    //             // 'Content-Type': 'application/x-www-form-urlencoded',
-    //         },
-    //         redirect: 'follow', // manual, *follow, error
-    //         referrerPolicy: 'no-referrer', // no-referrer, *client
-    //         body: JSON.stringify(data) // body data type must match "Content-Type" header
-    //     });
-    //     return await response.json(); // parses JSON response into native JavaScript objects
-    // }
-
     handleRenderClick() {
-        console.log('gandelds')
+        //console.log('gandelds')
+
+        if (!this.state.projects || !this.state.projects.length) return;
 
         this.setState({
             loadingRender: true,
+        }, () => {
+
+            let oneDimensionProjects = []
+
+            for (let p of this.state.projects) {
+                if (p.images) {
+                    for (let i of p.images) {
+                        oneDimensionProjects.push(i)
+                    }
+                }
+            }
+
+            axios.post(`${this.props.BACKEND_ADDRESS}/api/generate_pdf`, { data: oneDimensionProjects }) //
+                .then(data => {
+                    axios.get(`${this.props.BACKEND_ADDRESS}/info`).then(infodata => this.setState({
+                        warningFolderName: infodata.data.warningFolderName,
+                        warningCount: infodata.data.warningCount,
+                        warningSize: infodata.data.warningSize,
+
+                    }))
+
+
+
+                    this.setState({
+                        link: data.data.link,
+                        error: data.data.error,
+                        loadingRender: false,
+                        showModal: true,
+                    }); console.log(JSON.stringify(data))
+
+
+                    const conf = document.querySelector(".conf")
+                    confetti(conf, {
+
+                        angle: 270,
+                        spread: 180,
+                        startVelocity: 15,
+                        elementCount: 30,//70,
+                        dragFriction: 0.12,
+                        duration: 1000,
+                        stagger: 2,
+                        width: "10px",
+                        height: "10px",
+                        perspective: "500px",
+                        colors: ["#a864fd", "#29cdff", "#78ff44", "#ff718d", "#fdff6a"]
+                    })
+
+                })
         })
 
-        axios.post('api/generate_pdf', { data: this.state.projects })
-            //.then(data => { this.setState({ link: data.link }) })
-            //.then(() => { this.setState({ loadingRender: false }); alert('ok'); });
-        //  
+
 
     }
+
+    
 
     render() {
         return (
@@ -99,7 +144,7 @@ class Page2 extends Component {
                 }
 
                 {!this.state.loading &&
-                    <Segment.Group>
+                    <Segment.Group >
                         <Segment>
                             <Grid container columns={3} stackable>
                                 <Grid.Column>
@@ -114,8 +159,16 @@ class Page2 extends Component {
                                     </Segment>
                                 </Grid.Column>
                                 <Grid.Column>
-                                    <Segment basic>
-
+                                    <Segment basic style={{ textAlign: 'center' }}>
+                                        <div width='10px' style={{ margin: '0 auto', position: 'absolute', left: '50%', right: '50%' }}>
+                                            <div className='conf'></div>
+                                        </div>
+                                        {/* {this.state.showModal &&
+                                            <ModalSuccess
+                                                link={this.state.link}
+                                                warningFolderName={this.state.warningFolderName}
+                                                warningCount={this.state.warningCount}
+                                            />} */}
                                     </Segment>
                                 </Grid.Column>
                                 <Grid.Column>
@@ -124,8 +177,8 @@ class Page2 extends Component {
                                             color="orange"
                                             fluid
                                             icon
-                                            onClick={(e) => { this.handleRenderClick(e); return false }}
-                                            loading={this.state.loadingRender}
+                                            onClick={this.handleRenderClick}
+                                        //loading={this.state.loadingRender}
                                         >
                                             <Icon name="download" />&nbsp;
                                         Сгенерировать PDF
@@ -135,15 +188,47 @@ class Page2 extends Component {
                             </Grid>
                         </Segment>
 
-                        <Segment style={{ width: '100%' }}>
-                            <DndList
-                                img_add_prefix={this.props.img_add_prefix}
-                                items={this.state.projects}
-                                handleOrderChange={this.handleOrderChange}
+                        {!this.state.showModal &&
+                            <Segment style={{ width: '100%' }}>
+                                <DndList
+                                    img_add_prefix={this.props.img_add_prefix}
+                                    items={this.state.projects}
+                                    handleOrderChange={this.handleOrderChange}
+                                    handleRemoveProject={this.handleRemoveProject}
 
-                            />
-                        </Segment>
+                                />
+                            </Segment>
+                        }
+
+
+
+                        {this.state.showModal &&
+                            <Container text basic>
+                                <div style={{ padding: "20px 0 100px 0" }}>
+                                    <Header style={{ fontSize: '25px', }}>Портфолио готово! 🥳</Header>
+
+                                    <p style={{ fontSize: '20px', }}>
+                                        <a target="_blank" href={this.state.link} download >Нажмите, чтобы скачать pdf</a>
+                                    </p>
+                                    <p style={{ fontSize: '15px', }}>
+                                        (если открывается в браузере, а не скачивается (особенность хрома), можно нажать правой кнопкой мыши <Icon name='long arrow alternate right' /> "сохранить ссылку как")
+                                    </p>
+
+                                    <div>
+                                        <br />
+                                        <p>
+                                            Не забудьте удалить файл с сервера, если он вам больше не нужен. <br />
+
+                                             Сейчас в папке {this.state.warningFolderName} находится файлов: {this.state.warningCount}. <br /><br />Они занимают {this.state.warningSize} на диске.
+                                        </p>
+                                    </div>
+                                </div>
+                            </Container>
+                        }
+
                     </Segment.Group>
+
+
                 }
             </div>
         );
