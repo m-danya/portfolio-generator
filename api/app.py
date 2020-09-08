@@ -7,8 +7,10 @@ from flask import request
 from flask_cors import CORS
 import os
 
+
 def node_string(A, five):
     return chr(ord('A') + A) + str(five + 1)
+
 
 app = Flask(__name__)
 CORS(app)
@@ -27,6 +29,7 @@ paths_column = 2     # C
 category_column = 3  # D
 name_column = 4      # E
 tags_column = 5      # F
+
 
 def convert_bytes(num):
     for x in ['bytes', 'KB', 'MB', 'GB', 'TB']:
@@ -94,6 +97,8 @@ def get_data():
 
         all_names = []
 
+        used_numbers = []
+
         ans = []
 
         rows = list(s.rows)[2:]
@@ -143,12 +148,24 @@ def get_data():
                         paths[i] += '.jpg'
 
                 #    for i in range(30):
+                project_nubmer = row[number_column].value
+
+                if (project_nubmer in used_numbers):
+                    print('raise')
+                    raise ValueError(
+                        'Таблица заполнена некорректно: есть два проекта с номером ' + str(project_nubmer))
+                else:
+                    #print('numba = ' + str(row[number_column].value), + 'list = ')
+                    # print(used_numbers)
+                    used_numbers.append(project_nubmer)
+                    print('1 ok')
+
                 data.append({
                     'images': paths,
                     'title': name,
                     'categories': categories,
                     'tags': tags,
-                    'number': row[number_column].value,
+                    'number': project_nubmer,
                     'client': row[client_column].value,
                 })
 
@@ -183,14 +200,19 @@ def get_data():
 @app.route('/api/generate_pdf', methods=['POST'])
 def generate_pdf():
 
+    filename = time.strftime('Portfolio_%d-%m-%Y_%H-%M-%S')
+
     print('got data!')
-    #print(json.loads(json.loads(request.data)['data']))
+    # print(json.loads(json.loads(request.data)['data']))
     print('###')
-    projects_data = json.loads(request.data)['data']
+
+    request_data = json.loads(request.data)
+
+    projects_data = request_data['data']
     # print(projects_data[0]['images'])
     if (len(projects_data) < 1):
         return {'link': "../public/Pdfs/Portfolio_05-09-2020_20-18-52.pdf"}
-        #return {'error': 'Вы не выбрали ни одного проекта!'}
+        # return {'error': 'Вы не выбрали ни одного проекта!'}
     print()
     print()
     #print([i['images'] for i in projects_data])
@@ -202,8 +224,7 @@ def generate_pdf():
 
     img_list = [path_to_images + image for image in pr]
 
-    path_to_pdf = path_to_pdfs + \
-        time.strftime('Portfolio_%d-%m-%Y_%H-%M-%S.pdf')
+    path_to_pdf = path_to_pdfs + filename + '.pdf'
 
     with open(path_to_pdf, "wb") as f:
         f.write(img2pdf.convert([i for i in img_list]))
@@ -212,13 +233,24 @@ def generate_pdf():
         'link': host + path_to_pdf,
     }
 
-    #return {'error': 'Вы не выбрали ни одного проекта!'}
+    # saving data to json
+
+    with open(path_to_pdfs + filename + '.json', 'w') as outfile:
+        json.dump({
+            'projects': request_data['projects'],
+            'projectNames': request_data['projectNames'],
+            'chosenProjects': request_data['chosenProjects'],
+            'numberOfChosenProjects': request_data['numberOfChosenProjects'],
+        }, outfile)
+
+    # return {'error': 'Вы не выбрали ни одного проекта!'}
     return response
 
 
 @app.route('/Pdfs/<path:filename>', methods=['GET', 'POST'])
 def download(filename):
     return send_from_directory(directory=path_to_folder_pdfs, filename=filename)
+
 
 @app.route('/info')
 def info():

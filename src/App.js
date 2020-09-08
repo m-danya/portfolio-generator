@@ -3,6 +3,8 @@ import React from "react";
 import CardsCollection from "./CardsCollection.js";
 import FilterMenu from "./FilterMenu.js";
 import Page2 from './Page2'
+import arrayMove from 'array-move';
+
 import {
   Button,
   Container,
@@ -32,6 +34,7 @@ const style = {
 const BACKEND_ADDRESS = 'http://127.0.0.1:5000'
 
 class App extends React.Component {
+  
   img_add_prefix(path, type) {
     //return "./Images/" + path;
     if (type == 'preview small') return "./PreviewSmall/" + path;
@@ -52,12 +55,16 @@ class App extends React.Component {
       numberOfChosenProjects: 0,
       loading_data: true,
       error: null,
+      projects: [],
     };
 
     this.onChangeProject = this.onChangeProject.bind(this);
     this.recountVisibleProjects = this.recountVisibleProjects.bind(this);
     this.selectAll = this.selectAll.bind(this);
     this.setPage = this.setPage.bind(this);
+    this.handleOrderChange = this.handleOrderChange.bind(this);
+    this.handleRemoveProject = this.handleRemoveProject.bind(this);
+
 
   }
 
@@ -172,36 +179,67 @@ class App extends React.Component {
     //console.log("project changed! " + number);
     this.setState((state, props) => {
       let plus_minus = 0;
+
       let NewChosenProjects = state.chosenProjects.slice(); //IMMUTABLE
+      let NewProjects = state.projects.slice(); //also immutable.
+
       NewChosenProjects[number] = !state.chosenProjects[number]
-      if (NewChosenProjects[number]) ++plus_minus;
-      else --plus_minus;
+      if (NewChosenProjects[number]) {
+        for (let p of this.state.data) {
+          if (p.number == number) {
+            NewProjects.push(p);
+          }
+        }
+
+        ++plus_minus;
+      }
+      else {
+        NewProjects = NewProjects.filter(e => e.number != number);
+        --plus_minus;
+      }
+
       return {
         chosenProjects: NewChosenProjects,
         numberOfChosenProjects: state.numberOfChosenProjects + plus_minus,
+        projects: NewProjects,
       };
     }
     );
   }
 
   selectAll(type) {
-    console.log('type = ' + type)
+    //console.log('type = ' + type)
     this.setState((state, props) => {
       let ans1 = state.chosenProjects.slice();
       let ans2 = state.chosenProjects.slice();
+      let NewProjects = state.projects.slice(); //also immutable.
 
       let count_plus = 0
       let count_minus = 0
 
       for (let t of state.visibleProjects) {
-        if (!ans1[t]) ++count_plus;
+        if (!ans1[t]) {
+
+          ++count_plus;
+          for (let p of this.state.data) {
+            if (p.number == t) {
+              NewProjects.push(p);
+            }
+          }
+        }
+
         ans1[t] = true;
-        if (ans2[t]) ++count_minus;
+
+        if (ans2[t]) {
+          ++count_minus;
+          NewProjects = NewProjects.filter(e => e.number != t);
+        }
         ans2[t] = false;
       }
       return ({
         chosenProjects: type == 'select all' ? ans1 : ans2,
         numberOfChosenProjects: type == 'select all' ? state.numberOfChosenProjects + count_plus : state.numberOfChosenProjects - count_minus,
+        projects: NewProjects,
       })
     });
   }
@@ -210,14 +248,34 @@ class App extends React.Component {
     this.setState({
       page: s
     });
+
+    if (s == 'move') {
+      this.setState({
+        visibleProjects: [],
+      }, function callback() {
+        this.recountVisibleProjects();
+      });
+    }
   }
 
-  handleRenderClick() {
-    let oneDimensionProjects = ['01_DDVB_portfolio_CORP-BRANDING-all-26.jpg',
-      '01_DDVB_portfolio_CORP-BRANDING-all-27.jpg']
-    axios.post(`${BACKEND_ADDRESS}/api/generate_pdf`, { data: oneDimensionProjects }) //
-    alert('done')
+  handleOrderChange(oldIndex, newIndex) {
+    this.setState(({ projects }) => ({
+      projects: arrayMove(projects, oldIndex, newIndex),
+    }));
   }
+
+  handleRemoveProject(index) {
+    this.setState(({ projects, chosenProjects, numberOfChosenProjects }) => {
+      let NewChosenProjects = chosenProjects.slice();
+      NewChosenProjects[index] = 0;
+      return {
+        projects: projects.filter((e) => { return e.number != index }),
+        chosenProjects: NewChosenProjects,
+        numberOfChosenProjects: numberOfChosenProjects - 1,
+      }
+    });
+  }
+
   render() {
     return (<div>
       <Header
@@ -245,6 +303,7 @@ class App extends React.Component {
               selectAll={this.selectAll}
               numberOfVisibleProjects={this.state.visibleProjects ? this.state.visibleProjects.length : 0}
               setPage={this.setPage}
+
             //recountVisibleProjects={this.recountVisibleProjects}
             />
 
@@ -296,6 +355,12 @@ class App extends React.Component {
             img_add_prefix={this.img_add_prefix}
             setPage={this.setPage}
             BACKEND_ADDRESS={BACKEND_ADDRESS}
+            projects={this.state.projects}
+            handleOrderChange={this.handleOrderChange}
+            handleRemoveProject={this.handleRemoveProject}
+            projectNames={this.state.projectNames}
+            chosenProjects={this.state.chosenProjects}
+            numberOfChosenProjects={this.state.numberOfChosenProjects}
           />
 
         </Container>

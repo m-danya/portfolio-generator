@@ -80,6 +80,11 @@ class FilterMenu extends React.Component {
 
     }
   }
+  
+  componentWillUnmount()
+  {
+    this.recountVisibleTags();
+  }
 
   handleFilterCategoryChange(e, { name, value }) {
     //console.log(e);

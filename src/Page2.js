@@ -12,7 +12,6 @@ import {
     from 'semantic-ui-react'
 
 import DndList from './DndList'
-import arrayMove from 'array-move';
 import React, { Component } from 'react';
 import ModalSuccess from './ModalSuccess'
 import { confetti } from 'dom-confetti';
@@ -26,48 +25,37 @@ class Page2 extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            loading: true,
+            //loading: true,
             loadingRender: false,
-            order: [],
             showModal: false,
         };
-        this.handleOrderChange = this.handleOrderChange.bind(this);
-        this.handleRemoveProject = this.handleRemoveProject.bind(this);
+
         this.handleRenderClick = this.handleRenderClick.bind(this);
     }
 
-    handleOrderChange(oldIndex, newIndex) {
-        this.setState(({ projects }) => ({
-            projects: arrayMove(projects, oldIndex, newIndex),
-        }));
-    }
 
-    handleRemoveProject(index) {
-        this.setState(({ projects }) => ({
-            projects: projects.filter((e) => { return e.number != index }),
-        }));
-    }
 
 
     componentDidMount() {
         //console.log('didmount! ' + this.props.data.length + ', wow!')
-        let projects = []
-        if (this.props.data && this.props.data.length)
-            for (let p of this.props.data) {
-                if (this.props.chosenProjects[p.number]) {
-                    projects.push(p)
-                }
-            }
-        this.setState({
-            projects: projects,
-            loading: false,
-        })
+        //OLD APPROACH
+        // let projects = []
+        // if (this.props.data && this.props.data.length)
+        //     for (let p of this.props.data) {
+        //         if (this.props.chosenProjects[p.number]) {
+        //             projects.push(p)
+        //         }
+        // }
+        // this.setState({
+        //     projects: projects,
+        //     loading: false,
+        // })
     }
 
     handleRenderClick() {
         //console.log('gandelds')
 
-        if (!this.state.projects || !this.state.projects.length) return;
+        if (!this.props.projects || !this.props.projects.length) return;
 
         this.setState({
             loadingRender: true,
@@ -75,7 +63,7 @@ class Page2 extends Component {
 
             let oneDimensionProjects = []
 
-            for (let p of this.state.projects) {
+            for (let p of this.props.projects) {
                 if (p.images) {
                     for (let i of p.images) {
                         oneDimensionProjects.push(i)
@@ -83,13 +71,19 @@ class Page2 extends Component {
                 }
             }
 
-            axios.post(`${this.props.BACKEND_ADDRESS}/api/generate_pdf`, { data: oneDimensionProjects }) //
+            axios.post(`${this.props.BACKEND_ADDRESS}/api/generate_pdf`, {
+                data: oneDimensionProjects,
+                projects: this.props.projects,
+                projectNames: this.props.projectNames,
+                chosenProjects: this.props.chosenProjects,
+                numberOfChosenProjects: this.props.numberOfChosenProjects,
+
+            }) //
                 .then(data => {
                     axios.get(`${this.props.BACKEND_ADDRESS}/info`).then(infodata => this.setState({
                         warningFolderName: infodata.data.warningFolderName,
                         warningCount: infodata.data.warningCount,
                         warningSize: infodata.data.warningSize,
-
                     }))
 
 
@@ -125,7 +119,7 @@ class Page2 extends Component {
 
     }
 
-    
+
 
     render() {
         return (
@@ -178,7 +172,7 @@ class Page2 extends Component {
                                             fluid
                                             icon
                                             onClick={this.handleRenderClick}
-                                        //loading={this.state.loadingRender}
+                                            loading={this.state.loadingRender}
                                         >
                                             <Icon name="download" />&nbsp;
                                         Сгенерировать PDF
@@ -192,9 +186,9 @@ class Page2 extends Component {
                             <Segment style={{ width: '100%' }}>
                                 <DndList
                                     img_add_prefix={this.props.img_add_prefix}
-                                    items={this.state.projects}
-                                    handleOrderChange={this.handleOrderChange}
-                                    handleRemoveProject={this.handleRemoveProject}
+                                    items={this.props.projects}
+                                    handleOrderChange={this.props.handleOrderChange}
+                                    handleRemoveProject={this.props.handleRemoveProject}
 
                                 />
                             </Segment>
