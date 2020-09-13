@@ -20,6 +20,7 @@ print('\n\n\n')
 path_to_xlsx = '../public/DIGITAL_PORTFOLIO.xlsx'
 path_to_images = '../public/Images/'
 path_to_folder_pdfs = '/home/greedisgood/github/js/ddvb/api/Pdfs'
+path_to_folder_jsons = '/home/greedisgood/github/js/ddvb/api/Jsons'
 path_to_pdfs = 'Pdfs/'
 host = 'http://localhost:5000/'
 
@@ -200,7 +201,8 @@ def get_data():
 @app.route('/api/generate_pdf', methods=['POST'])
 def generate_pdf():
 
-    filename = time.strftime('Portfolio_%d-%m-%Y_%H-%M-%S')
+    datetime = time.strftime('%d-%m-%Y_%H-%M-%S')
+    filename = 'Portfolio_' + datetime
 
     print('got data!')
     # print(json.loads(json.loads(request.data)['data']))
@@ -235,12 +237,16 @@ def generate_pdf():
 
     # saving data to json
 
-    with open(path_to_pdfs + filename + '.json', 'w') as outfile:
+    with open(
+            path_to_folder_jsons + '/' +
+            str(len([name for name in os.listdir(path_to_folder_jsons)]) + 1) + '_' +
+            filename + '.json', 'w') as outfile:
         json.dump({
             'projects': request_data['projects'],
             'projectNames': request_data['projectNames'],
             'chosenProjects': request_data['chosenProjects'],
             'numberOfChosenProjects': request_data['numberOfChosenProjects'],
+            'date': datetime.replace('_', ', ').replace('-', '.', 2).replace('-', ':', 2),
         }, outfile)
 
     # return {'error': 'Вы не выбрали ни одного проекта!'}
@@ -254,10 +260,28 @@ def download(filename):
 
 @app.route('/info')
 def info():
+
+    #projects = os.listdir(path_to_folder_jsons)
+
     return {
         'warningFolderName': path_to_folder_pdfs,
         'warningCount': len([name for name in os.listdir(path_to_folder_pdfs)]),
         'warningSize': convert_bytes(sum([os.stat(path_to_folder_pdfs + '/' + i).st_size for i in os.listdir(path_to_folder_pdfs)]))
+    }
+
+
+@app.route('/api/get_portfolios')
+def get_portfolios():
+    projects = sorted(os.listdir(path_to_folder_jsons), reverse=True)
+    print(projects)
+    ans = []
+    for p in projects:
+        with open(path_to_folder_jsons + '/' + p, 'r') as json_file:
+            jdata = json.load(json_file)
+            ans.append(jdata)
+
+    return {
+        'portfolios': ans,
     }
 
 

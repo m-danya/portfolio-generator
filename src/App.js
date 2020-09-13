@@ -3,6 +3,9 @@ import React from "react";
 import CardsCollection from "./CardsCollection.js";
 import FilterMenu from "./FilterMenu.js";
 import Page2 from './Page2'
+import MainMenu from './MainMenu'
+import Portfolios from './Portfolios'
+
 import arrayMove from 'array-move';
 
 import {
@@ -24,17 +27,17 @@ import {
 
 const axios = require('axios').default;
 
-const style = {
-  h1: {
-    paddingTop: "1em",
-    paddingBottom: "0.5em",
-  },
-};
+// const style = {
+//   h1: {
+//     paddingTop: "1em",
+//     paddingBottom: "0.5em",
+//   },
+// };
 
 const BACKEND_ADDRESS = 'http://127.0.0.1:5000'
 
 class App extends React.Component {
-  
+
   img_add_prefix(path, type) {
     //return "./Images/" + path;
     if (type == 'preview small') return "./PreviewSmall/" + path;
@@ -47,7 +50,7 @@ class App extends React.Component {
     super(props);
     this.child = React.createRef();
     this.state = {
-      page: 'main',
+      page: 'hello',
       chosenProjects: [],
       projectNames: [],
       categories: [],
@@ -56,6 +59,7 @@ class App extends React.Component {
       loading_data: true,
       error: null,
       projects: [],
+      loading_portfolios: true,
     };
 
     this.onChangeProject = this.onChangeProject.bind(this);
@@ -64,11 +68,62 @@ class App extends React.Component {
     this.setPage = this.setPage.bind(this);
     this.handleOrderChange = this.handleOrderChange.bind(this);
     this.handleRemoveProject = this.handleRemoveProject.bind(this);
+    this.getData = this.getData.bind(this);
+    this.getPortfolios = this.getPortfolios.bind(this);
+    this.loadPortfolio = this.loadPortfolio.bind(this);
 
 
   }
 
-  componentDidMount() //after mount
+  loadPortfolio(e) {
+    this.setState({
+      chosenProjects: e.chosenProjects,
+      numberOfChosenProjects: e.numberOfChosenProjects,
+      projectNames: e.projectNames,
+      projects: e.projects,
+    }, () => this.setPage('main'));
+
+  }
+
+  getPortfolios() {
+    axios.get(`${BACKEND_ADDRESS}/api/get_portfolios`)
+      .then(res => {
+        //if it's internal error
+        let error_text = null;
+        if (res.status == 500)
+          error_text = 'Неотловленная ошибка на backend-части, ошибка 500'
+        if (res.status == 404)
+          error_text = 'Не удалось установить связь с backend-сервером. ошибка 404'
+        this.setState({
+          error: error_text,
+          loading_portfolios: false,
+        });
+        //return null;
+        let result = res.data;
+
+        if (result) {
+          //console.log('data: ' + JSON.stringify(result))
+          this.setState({
+            portfolios: result.portfolios,
+            loading_portfolios: false,
+            error: result.error,
+          });
+          console.log('portfolios got')
+        }
+      },
+        (e) => {
+          this.setState({
+            data: [],
+            error: e,
+            loading_portfolios: false,
+          });
+
+        }
+      );
+  }
+
+  //componentDidMount() //after mount
+  getData() //after mount
   {
     // fetch(`${backend_address}/api/get_data`, {
     //   method: 'GET',
@@ -107,7 +162,7 @@ class App extends React.Component {
             projectNames: result.names,
           });
           console.log('data got')
-          this.child.current.recountVisibleTags();
+          if (this.state.page == 'main') this.child.current.recountVisibleTags();
           this.recountVisibleProjects();
           //this.recountVisibleTags();
         }
@@ -256,6 +311,15 @@ class App extends React.Component {
         this.recountVisibleProjects();
       });
     }
+
+    if (s == 'main' && !this.state.data) {
+      this.getData();
+    }
+
+    if (s == 'portfolios') {
+      this.getPortfolios();
+    }
+
   }
 
   handleOrderChange(oldIndex, newIndex) {
@@ -278,14 +342,20 @@ class App extends React.Component {
 
   render() {
     return (<div>
+      <MainMenu
+        setPage={this.setPage}
+        page={this.state.page}
+      />
+
       <Header
         as="h1"
-        content="Генератор портфолио"
-        style={
-          style.h1
-        }
+        content="Портфолио"
+        style={{
+          paddingBottom: '20px',
+          //paddingTop: '30px',
+          //style.h1
+        }}
         textAlign="center" />
-
       {this.state.page == 'main' &&
         <Container className='containerFullWitdh'>
           <Segment.Group >
@@ -365,6 +435,69 @@ class App extends React.Component {
 
         </Container>
       }
+      {this.state.page == 'hello' &&
+        <Segment basic style={{
+          width: '30%',
+          display: 'block',
+          marginLeft: 'auto',
+          marginRight: 'auto',
+          paddingTop: '50px',
+
+
+        }}>
+          <Grid ui centered>
+            <Grid.Row style={{
+              paddingTop: 0,
+              paddingBottom: '5px',
+            }}>
+              <Button positive fluid size='medium' onClick={() => {
+                this.setPage('main');
+                this.selectAll('deselect all');
+                this.setState({
+                  projects: [],
+                })
+              }}>
+                Создать портфолио с чистого листа
+              </Button>
+            </Grid.Row>
+            <Grid.Row
+              style={{
+                padding: '5px 0',
+              }}
+            >
+              <Button primary fluid size="medium" onClick={() => { this.setPage('portfolios') }} >
+                Посмотреть ранее созданные
+              </Button>
+            </Grid.Row>
+
+            {/* <Grid.Row
+              style={{
+                marginTop: '100px',
+              }}
+            >
+              <Button fluid size="medium" onClick={() => { this.setPage('portfolios') }} >
+              Информация о занимаемом месте
+          </Button>
+            </Grid.Row> */}
+          </Grid>
+        </Segment>
+      }
+
+      {this.state.page == 'portfolios' &&
+        <Container>
+
+          <Portfolios
+            loading_portfolios={this.state.loading_portfolios}
+            BACKEND_ADDRESS={BACKEND_ADDRESS}
+            portfolios={this.state.portfolios}
+            loadPortfolio={this.loadPortfolio}
+            setPage={this.setPage}
+            selectAll={this.selectAll}
+          />
+
+        </Container>
+      }
+
     </div >
     );
   }
