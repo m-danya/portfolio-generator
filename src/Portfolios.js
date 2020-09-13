@@ -49,10 +49,7 @@ class Portfolios extends Component {
 
 
                                 }}>
-                                    <Button positive fluid size='medium' onClick={() => {
-                                        this.props.setPage('main');
-                                        this.props.selectAll('deselect all');
-                                    }}>
+                                    <Button positive fluid size='medium' onClick={this.props.createNewPortfolio}>
                                         Создать портфолио с чистого листа
                                     </Button>
                                 </Segment>

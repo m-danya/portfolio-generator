@@ -71,6 +71,7 @@ class App extends React.Component {
     this.getData = this.getData.bind(this);
     this.getPortfolios = this.getPortfolios.bind(this);
     this.loadPortfolio = this.loadPortfolio.bind(this);
+    this.createNewPortfolio = this.createNewPortfolio.bind(this);
 
 
   }
@@ -322,6 +323,14 @@ class App extends React.Component {
 
   }
 
+  createNewPortfolio() {
+    this.setPage('main');
+    this.selectAll('deselect all');
+    this.setState({
+      projects: [],
+    })
+  }
+
   handleOrderChange(oldIndex, newIndex) {
     this.setState(({ projects }) => ({
       projects: arrayMove(projects, oldIndex, newIndex),
@@ -436,41 +445,36 @@ class App extends React.Component {
         </Container>
       }
       {this.state.page == 'hello' &&
-        <Segment basic style={{
-          width: '30%',
-          display: 'block',
-          marginLeft: 'auto',
-          marginRight: 'auto',
-          paddingTop: '50px',
+        <Container className='containerFullWitdh'>
+          <Segment basic style={{
+            width: '30%',
+            display: 'block',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            paddingTop: '50px',
 
 
-        }}>
-          <Grid ui centered>
-            <Grid.Row style={{
-              paddingTop: 0,
-              paddingBottom: '5px',
-            }}>
-              <Button positive fluid size='medium' onClick={() => {
-                this.setPage('main');
-                this.selectAll('deselect all');
-                this.setState({
-                  projects: [],
-                })
+          }}>
+            <Grid ui centered>
+              <Grid.Row style={{
+                paddingTop: 0,
+                paddingBottom: '5px',
               }}>
-                Создать портфолио с чистого листа
+                <Button positive fluid size='medium' onClick={this.createNewPortfolio}>
+                  Создать портфолио с чистого листа
               </Button>
-            </Grid.Row>
-            <Grid.Row
-              style={{
-                padding: '5px 0',
-              }}
-            >
-              <Button primary fluid size="medium" onClick={() => { this.setPage('portfolios') }} >
-                Посмотреть ранее созданные
+              </Grid.Row>
+              <Grid.Row
+                style={{
+                  padding: '5px 0',
+                }}
+              >
+                <Button primary fluid size="medium" onClick={() => { this.setPage('portfolios') }} >
+                  Посмотреть ранее созданные
               </Button>
-            </Grid.Row>
+              </Grid.Row>
 
-            {/* <Grid.Row
+              {/* <Grid.Row
               style={{
                 marginTop: '100px',
               }}
@@ -479,8 +483,10 @@ class App extends React.Component {
               Информация о занимаемом месте
           </Button>
             </Grid.Row> */}
-          </Grid>
-        </Segment>
+            </Grid>
+          </Segment>
+        </Container>
+
       }
 
       {this.state.page == 'portfolios' &&
@@ -493,6 +499,7 @@ class App extends React.Component {
             loadPortfolio={this.loadPortfolio}
             setPage={this.setPage}
             selectAll={this.selectAll}
+            createNewPortfolio={this.createNewPortfolio}
           />
 
         </Container>
